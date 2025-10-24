@@ -10,12 +10,13 @@ dotenv.config()
 
 export const userCtrl = {}
 
+
+//creates new user
 userCtrl.register = async (req, res) => {
 	const body = req.body;
 
 	try {
 		const { error, value } = userRegisterValidationSchema.validate(body)
-
 
 		//checks  if the user email is already stored inn db
 		const userEmail = await User.findOne({ email: value.email })
@@ -27,18 +28,15 @@ userCtrl.register = async (req, res) => {
 
 		//hashed password before saving in db
 		const hashedPassword =await bcrypt.hash(value.password,10)
-
 		value.password = hashedPassword
 		
 		//saving the registered data in database
 		const user = await User.create(value)
 		res.json(user)
-
 	} catch (error) {
 		res.status(500).json(error.message)
 
 	}
-
 };
 
 
@@ -71,16 +69,33 @@ userCtrl.login = async (req,res)=>{
 	}
 }
 
-
+//list all users
 userCtrl.list = async(req,res)=>{
 	try {
 		const users = await User.find()
 		res.json(users)
 	} catch (error) {
-		res.status(500).json({erorr:"Something went wrong"})	
+		res.status(400).json({erorr:"Something went wrong"})	
 	}
 }
 
+//show single user
+userCtrl.show =  async(req,res)=>{
+	const id = req.params.id
+	
+	try {
+		const user = await User.findById(id)
+		
+		if(!user){
+			return res.status(404).json("User not found!")
+		}
+		res.json(user)
+	} catch (error) {
+		res.status(400).json(error.message)
+	}
+}
+
+//remove the user
 userCtrl.remove = async(req,res)=>{
 	const id = req.params.id
 	try {
