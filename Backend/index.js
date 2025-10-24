@@ -23,13 +23,6 @@ configDb()
 
 
 
-
-
-
-
-
-
-
 //Public Route
 app.post('/register', userCtrl.register)
 app.post('/login',userCtrl.login)
@@ -37,10 +30,13 @@ app.post('/login',userCtrl.login)
 //protected route
 app.get('/users',userAuthentication,userAuthorization(["admin"]),userCtrl.list) 
 app.delete('/users/:id',userAuthentication,userAuthorization(["admin"]),userCtrl.remove)
+app.get('/user/:id', userAuthentication,userAuthorization(["admin"]),userCtrl.show)
 
 //mechanic
-app.post('/mechanic',mechCtrl.create)
-
+app.post('/mechanic',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.create)
+app.get('/mechanic/:id',userAuthentication,userAuthorization(['mechanic']),mechCtrl.show)
+app.put('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.update)
+app.delete('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.delete)
 
 
 app.listen(port, () => {

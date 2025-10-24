@@ -1,6 +1,11 @@
 import mongoose from 'mongoose'
 
 const mechanicSchema = new mongoose.Schema({
+	userId:{
+		type:mongoose.Schema.Types.ObjectId,
+		ref:"User",
+		required:true,
+	},
 	firstName:{
 		type:String,
 		required:true
@@ -31,4 +36,5 @@ const mechanicSchema = new mongoose.Schema({
 	}
 })
 
-export const Mechanic = mongoose.model("Mechanic", mechanicSchema)
+const Mechanic = mongoose.model("Mechanic", mechanicSchema);
+export default Mechanic;
