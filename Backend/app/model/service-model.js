@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
 
-
 const serviceSchema = new mongoose.Schema({
-	name:String, //eg: towing , jumpstart, Puncture, Engine-problem
+	name:{type:String, unique:true}, //eg: towing , jumpstart, Puncture, Engine-problem
 	description:String,
 	basePrice:{
 		type:Number,

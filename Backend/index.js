@@ -4,6 +4,7 @@ import cors from "cors";
 const app = express();
 import { userCtrl } from './app/controller/user-controller.js'
 import {mechCtrl} from './app/controller/mechanic-controller.js'
+import serviceCtrl from './app/controller/service-controller.js'
 import {userAuthentication} from './app/middlewares/userAuthentication.js'
 import {userAuthorization} from "./app/middlewares/userAuthorization.js";
 
@@ -37,6 +38,13 @@ app.post('/mechanic',userAuthentication,userAuthorization(["mechanic"]),mechCtrl
 app.get('/mechanic/:id',userAuthentication,userAuthorization(['mechanic']),mechCtrl.show)
 app.put('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.update)
 app.delete('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.delete)
+
+//service
+app.post('/service',userAuthentication,userAuthorization(['admin']),serviceCtrl.create)
+app.get('/services',userAuthentication,userAuthorization(['admin']),serviceCtrl.list)
+app.get('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.show)
+app.put('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.update)
+app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.remove)
 
 
 app.listen(port, () => {

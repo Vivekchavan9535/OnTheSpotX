@@ -40,7 +40,7 @@ mechCtrl.show = async(req,res)=>{
 		}
 		res.status(200).json(mechanic)
 	} catch (error) {
-		res.status(400).json(erorr.message)
+		res.status(500).json(erorr.message)
 	}
 }
 
@@ -61,7 +61,7 @@ mechCtrl.update=async(req,res)=>{
 		res.status(200).json(mechanic)
 
 	} catch (error) {
-		res.status(400).json(error.message)
+		res.status(500).json(error.message)
 	}
 }
 
@@ -77,6 +77,6 @@ mechCtrl.delete = async(req,res)=>{
 		}
 		res.status(200).json("Successfully deleted")
 	} catch (error) {
-		res.status(400).json(error.message)
+		res.status(500).json(error.message)
 	}
 }
