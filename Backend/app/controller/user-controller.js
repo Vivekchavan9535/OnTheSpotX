@@ -75,7 +75,7 @@ userCtrl.list = async(req,res)=>{
 		const users = await User.find()
 		res.json(users)
 	} catch (error) {
-		res.status(400).json({erorr:"Something went wrong"})	
+		res.status(500).json({erorr:"Something went wrong"})	
 	}
 }
 
@@ -91,7 +91,7 @@ userCtrl.show =  async(req,res)=>{
 		}
 		res.json(user)
 	} catch (error) {
-		res.status(400).json(error.message)
+		res.status(500).json(error.message)
 	}
 }
 
