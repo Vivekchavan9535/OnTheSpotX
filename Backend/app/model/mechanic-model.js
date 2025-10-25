@@ -34,7 +34,7 @@ const mechanicSchema = new mongoose.Schema({
 		longitude: Number,
 		address: String
 	}
-})
+},{timestamps:true})
 
 const Mechanic = mongoose.model("Mechanic", mechanicSchema);
 export default Mechanic;
