@@ -5,6 +5,7 @@ const app = express();
 import { userCtrl } from './app/controller/user-controller.js'
 import {mechCtrl} from './app/controller/mechanic-controller.js'
 import serviceCtrl from './app/controller/service-controller.js'
+import serviceReqCtrl from './app/controller/serviceRequest-controller.js'
 import {userAuthentication} from './app/middlewares/userAuthentication.js'
 import {userAuthorization} from "./app/middlewares/userAuthorization.js";
 
@@ -35,6 +36,7 @@ app.get('/user/:id', userAuthentication,userAuthorization(["admin"]),userCtrl.sh
 
 //mechanic
 app.post('/mechanic',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.create)
+app.get('/mechanics',userAuthentication,userAuthorization(['admin']),mechCtrl.list)
 app.get('/mechanic/:id',userAuthentication,userAuthorization(['mechanic']),mechCtrl.show)
 app.put('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.update)
 app.delete('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.delete)
@@ -45,6 +47,9 @@ app.get('/services',userAuthentication,userAuthorization(['admin']),serviceCtrl.
 app.get('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.show)
 app.put('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.update)
 app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.remove)
+
+//service request
+app.post('/service-request',userAuthentication,userAuthorization(['customer']),serviceReqCtrl.create)
 
 
 app.listen(port, () => {

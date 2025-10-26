@@ -25,17 +25,6 @@ const userSchema = new mongoose.Schema({
 		default: "customer",
 		required: true
 	},
-	location: {
-		latitude: {
-			type: Number,
-		},
-		longitude: {
-			type: Number,
-		},
-		address: {
-			type: String,
-		}
-	},
 	vehicleType: {
 		type: String,
 	}
