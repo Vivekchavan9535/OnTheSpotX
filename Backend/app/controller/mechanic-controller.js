@@ -20,7 +20,7 @@ mechCtrl.create = async (req, res) => {
 	try {
 		const existingMechanic = await Mechanic.findOne({ userId })
 		if (existingMechanic) {
-			return res.status(400).json("Mechanic is already exist")
+			return res.status(400).json("Mechanic profile is already created!!")
 		}
 		const mechanic = await Mechanic.create(value)
 		res.status(201).json(mechanic)
@@ -28,6 +28,15 @@ mechCtrl.create = async (req, res) => {
 		res.status(401).json(error.message)
 	}
 
+}
+
+mechCtrl.list = async(req,res)=>{
+ try {
+	const allMechanics = await Mechanic.find()
+	res.status(200).json(allMechanics)
+ } catch (error) {
+	res.status(500).json(error.message)
+ }
 }
 
 
