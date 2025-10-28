@@ -8,6 +8,7 @@ import serviceCtrl from './app/controller/service-controller.js'
 import serviceReqCtrl from './app/controller/serviceRequest-controller.js'
 import {userAuthentication} from './app/middlewares/userAuthentication.js'
 import {userAuthorization} from "./app/middlewares/userAuthorization.js";
+import webhookCtrl from './app/controller/webhook-controller.js'
 
 
 
@@ -51,7 +52,9 @@ app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),servic
 //service request
 app.post('/service-request',userAuthentication,userAuthorization(['customer']),serviceReqCtrl.create)
 
+app.post('/whatsapp',webhookCtrl.handleWhatsapp)
 
 app.listen(port, () => {
 	console.log(`Server is running on ${port}`)
 })
+

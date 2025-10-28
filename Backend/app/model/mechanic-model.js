@@ -14,6 +14,11 @@ const mechanicSchema = new mongoose.Schema({
 		type:String,
 		required:true	
 	},
+	phone: {
+		type: String,
+		required: true,
+		unique: true
+	},
 	specialization: {
 		type: String,  //car, bike , both\
 		enum:['two-wheeler','four-wheeler','both']
@@ -30,8 +35,8 @@ const mechanicSchema = new mongoose.Schema({
 		default: true
 	},
 	location: {
-		latitude: Number,
-		longitude: Number,
+		latitude: {type:Number, required:true},
+		longitude: {type:Number, required:true},
 		address: String
 	}
 },{timestamps:true})
