@@ -37,19 +37,20 @@ serviceReqCtrl.create = async (req, res) => {
 		// Send request to first nearest mechanic
 		const nearestMechanic = nearbyAllMechanics[0];
 
+		const distance = nearestMechanic.distanceMeters < 1000 ? `${nearestMechanic.distanceMeters} m` : `${(nearestMechanic.distanceMeters / 1000).toFixed(1)} km`;
+
 		//callling whatsapp msg function 
 		await sendWhatsApp(Number(nearestMechanic.phone) , // must exist in Mechanic model
 			`🚨 New Service Request 🚨\n
 Vehicle: ${body.vehicleType}
 Issue: ${body.issueDescription}
 Location: ${body.userLocation.address}
-Distance: ${(nearestMechanic.distanceMeters / 1000).toFixed(1)} km
+Distance: ${distance}
 \n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 		);
-		console.log(nearestMechanic);
 	
-		res.status(201).json({ message: "Request created & sent to mechanic", serviceReq });
+		res.status(201).json({ message: "Request created & sent to mechanic", serviceReq, nearestMechanic });
 	} catch (error) {
 		res.status(500).json(error.message);
 	}
