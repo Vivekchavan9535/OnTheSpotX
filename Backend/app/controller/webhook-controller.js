@@ -21,10 +21,10 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		// const messageText =(data.body || "")
 		// console.log(messageText);
 
-		//response object from whatsapp
+		//response object from whatsapp on render
 		const messageText = (req.body.data.body || "").trim()
 		const from = (req.body.data.from || "").trim()
-		console.log(`Message : ${messageText}, \n From : ${from}`)
+		console.log(`Message : ${messageText}, \n From : ${from.replace("@c.us", "")}`)
 		
 		res.json({
 			success: true,
