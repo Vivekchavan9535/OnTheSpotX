@@ -24,7 +24,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		//response object from whatsapp
 		const messageText = (req.body.data.body || "").trim()
 		const from = (req.body.data.from || "").trim()
-		console.log(messageText,from)
+		console.log(`Message ${messageText},From : ${from}`)
 		
 		res.json({
 			success: true,
