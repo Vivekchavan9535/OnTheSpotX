@@ -1,65 +1,54 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const serviceRequestSchema = new mongoose.Schema({
 	userId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",
-		required: true
-	},
-	mechanicId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Mechanic",
+		required: true,
 	},
 	serviceId: {
-		type:mongoose.Schema.Types.ObjectId,
-		ref:"Service",
-		required:true
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Service",
+		required: true,
 	},
-	issueDescription: {
-		type: String,
-		required: true
-	},
-	vehicleType: {
-		type: String,
-		enum: ["two-wheeler", "four-wheeler"],
-		required: true
+	userLocation: {
+		latitude: Number,
+		longitude: Number,
+		address: String,
 	},
 	status: {
 		type: String,
-		enum: ["pending", "accepted", "onRoute", "arrived", "inProgress", "completed", "cancelled"],
-		default: "pending"
+		enum: ["waiting", "accepted", "rejected", "cancelled", "completed", "no-mechanic-found"],
+		default: "waiting",
 	},
-	userLocation: {
-		latitude: {
-			type: Number,
-			required: true
+	nearbyMechanics: [
+		{
+			mechanicId: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Mechanic",
+			},
+			name: String,
+			phone: String,
+			distanceMeters: Number,
+			notifiedAt: Date,
+			response: {
+				type: String,
+				enum: ["pending", "accepted", "rejected"],
+				default: "pending",
+			},
 		},
-		longitude: {
-			type: Number,
-			required: true
-		},
-		address: { 
-			type: String
-		}
+	],
+	currentMechanicIndex: {
+		type: Number,
+		default: 0,
 	},
-	mechanicLocation: {
-		latitude: { type: Number },
-		longitude: { type: Number },
-		address: { type: String }
+	lastNotifiedAt: {
+		type: Date,
 	},
-	distance: {
-		type: Number // Distance in kilometers or meters
+	acceptedMechanic: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Mechanic",
 	},
-	estimatedTime: {
-		type: Number // Time in minutes
-	},
-	totalCost: {
-		type: Number
-	},
-	completedAt: {
-		type: Date
-	},
-
 }, { timestamps: true });
 
 const ServiceRequest = mongoose.model("ServiceRequest", serviceRequestSchema);
