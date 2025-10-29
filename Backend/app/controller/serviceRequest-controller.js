@@ -48,7 +48,7 @@ Distance: ${(nearestMechanic.distanceMeters / 1000).toFixed(1)} km
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 		);
 		console.log(nearestMechanic);
-		
+	
 		res.status(201).json({ message: "Request created & sent to mechanic", serviceReq });
 	} catch (error) {
 		res.status(500).json(error.message);

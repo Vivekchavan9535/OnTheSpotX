@@ -11,6 +11,8 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	const from = req.body.from;
 	try {
 		await axios.post(webhookUrl, { received: req.body })
+		console.log(req.body);
+		
 		res.json({
 			success: true,
 			message: "Webhook received successfully",
