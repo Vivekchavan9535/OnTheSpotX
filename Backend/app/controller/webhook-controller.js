@@ -31,6 +31,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(200).json("rejected");
 		}
 
+		//if not 1 or 2 
 		console.log("Not valid response")
 		return res.status(409).json("Not valid response")
 		
