@@ -32,7 +32,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		}
 
 		if (messageText == "1" || messageText == "2") {
-			return res.json({
+			return res.status(200).json({
 				success: true,
 				message: "Webhook received successfully",
 				data: {
