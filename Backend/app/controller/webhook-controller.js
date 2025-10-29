@@ -4,7 +4,6 @@ import Mechanic from "../model/mechanic-model.js";
 
 
 const webhookUrl = "https://webhook.site/f3d80dc1-c168-4aa9-867b-4cac0042164d"
-
 const webhookCtrl = {}
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
@@ -18,6 +17,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			data: req.body,
 		});
 	} catch (error) {
+		console.log(error);
 		res.status(500).json("webhook", error.message)
 	}
 }
