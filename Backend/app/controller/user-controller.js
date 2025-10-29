@@ -70,13 +70,14 @@ userCtrl.login = async (req,res)=>{
 }
 
 //list all users
-userCtrl.list = async(req,res)=>{
-	try {
-		const users = await User.find()
-		res.json(users)
-	} catch (error) {
-		res.status(500).json({erorr:"Something went wrong"})	
-	}
+userCtrl.list = async (req, res) => {
+  try {
+    const users = await User.find()
+    res.json(users)
+  } catch (error) {
+    console.error("Error in /users route:", error.message)
+    res.status(500).json({ error: error.message })
+  }
 }
 
 //show single user
