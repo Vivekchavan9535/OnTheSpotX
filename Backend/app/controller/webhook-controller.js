@@ -11,7 +11,15 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	const from = req.body.from;
 	try {
 		await axios.post(webhookUrl, { received: req.body })
-		console.log(req.body);
+		
+		const data = req.body;
+		if(!data){
+			return res.json({ success: true, message: "No message data" });
+		}
+
+		const messageText =(data.body).trim()
+		console.log(messageText);
+		
 		
 		res.json({
 			success: true,

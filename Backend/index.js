@@ -52,6 +52,8 @@ app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),servic
 //service request
 app.post('/service-request',userAuthentication,userAuthorization(['customer']),serviceReqCtrl.create)
 
+
+//whatsapp msg response from nearest mechanic 1 - accept, 2-reject
 app.post('/whatsapp',webhookCtrl.handleWhatsapp)
 
 app.listen(port, () => {
