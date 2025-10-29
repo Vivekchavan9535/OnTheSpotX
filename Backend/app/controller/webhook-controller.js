@@ -12,13 +12,19 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	try {
 		await axios.post(webhookUrl, { received: req.body })
 		
-		const data = req.body;
-		if(!data){
-			return res.json({ success: true, message: "No message data" });
-		}
+		// const data = req.body;
+		// if(!data){
+		// 	return res.json({ success: true, message: "No message data" });
+		// }
 
-		const messageText =(data.body || "").trim()
-		console.log(messageText);
+		// const messageText =(data.body || "")
+		// console.log(messageText);
+
+		const { from, body, message } = req.body;
+
+		const messageText = body || message || "";
+		console.log("💬 Message text:", messageText);
+		console.log("👤 From:", from);
 		
 		
 		res.json({
