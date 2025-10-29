@@ -7,30 +7,43 @@ const webhookUrl = "https://webhook.site/0c45d06d-9ea7-43e0-a993-9de6b7b183c0"
 const webhookCtrl = {}
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
-	const message = req.body.message;
-	const from = req.body.from;
 	try {
 		await axios.post(webhookUrl, { received: req.body })
-		
-		// const data = req.body;
-
-		// if(!data){
-		// 	return res.json({ success: true, message: "No message data" });
-		// }
-
-		// const messageText =(data.body || "")
-		// console.log(messageText);
 
 		//response object from whatsapp on render
-		const messageText = (req.body.data.body || "").trim()
-		const from = (req.body.data.from || "").trim()
-		console.log(`Message : ${messageText}, \n From : ${from.replace("@c.us", "")}`)
-		
-		res.json({
-			success: true,
-			message: "Webhook received successfully",
-			data: req.body,
-		});
+		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
+		const from = (req.body?.data?.from || "").trim().replace("@c.us", "");
+
+		console.log(`Message : ${messageText}, \n From : ${from}`);
+
+		if (!messageText) {
+			return res.status(409).json("Response is empty")
+		}
+
+		// Handle responses
+		if (messageText === "1") {
+			console.log("Mechanic accepted the request");
+			return res.status(200).json("accepted");
+		}
+
+		if (messageText === "2") {
+			console.log("Mechanic rejected the request");
+			return res.status(200).json("rejected");
+		}
+
+		if (messageText == "1" || messageText == "2") {
+			return res.json({
+				success: true,
+				message: "Webhook received successfully",
+				data: {
+					messageText,
+					from
+				},
+			});
+		}else{
+			return res.status(409).json("Not valid response")
+		}
+
 	} catch (error) {
 		console.log(error.message);
 		res.status(500).json("webhook", error.message)
