@@ -31,19 +31,9 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(200).json("rejected");
 		}
 
-		if (messageText == "1" || messageText == "2") {
-			return res.status(200).json({
-				success: true,
-				message: "Webhook received successfully",
-				data: {
-					messageText,
-					from
-				},
-			});
-		}else{
-			console.log("Not valid response")
-			return res.status(409).json("Not valid response")
-		}
+		console.log("Not valid response")
+		return res.status(409).json("Not valid response")
+		
 
 	} catch (error) {
 		console.log(error.message);
