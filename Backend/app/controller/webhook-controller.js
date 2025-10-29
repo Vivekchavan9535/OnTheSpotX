@@ -41,7 +41,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				},
 			});
 		}else{
-			return res.status(409).json("Not valid response")
+			return res.json(409).json("Not valid response")
 		}
 
 	} catch (error) {
