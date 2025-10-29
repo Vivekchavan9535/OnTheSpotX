@@ -17,7 +17,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			data: req.body,
 		});
 	} catch (error) {
-		console.log(error);
+		console.log(error.message);
 		res.status(500).json("webhook", error.message)
 	}
 }
