@@ -37,13 +37,6 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(200).json("rejected");
 		}
 
-		if(messageText==="hello"){
-			
-			await sendWhatsApp(from,`Fuckyou 👈🏽 ${fromMech}`)
-			console.log("Mechanic accepted the request");
-			return res.status(200).json("accepted");
-		}
-
 		//if not 1 or 2 
 		console.log("Not valid response")
 		return res.status(409).json("Not valid response")
