@@ -61,7 +61,7 @@ Location: ${body.userLocation.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 			);
-			console.log(`✅ Sent to nearby mechanics : ${mech.name}`);
+			console.log(`Sent to nearby mechanics : ${mech.name}`);
 		})
 		res.status(201).json({ message: "Requests sent to all nearby mechanics" });
 	} catch (error) {
@@ -74,7 +74,6 @@ Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 
 
 //Reset service request status (for testing only)
-
 serviceReqCtrl.resetStatus = async (req, res) => {
   try {
     const request = await ServiceRequest.findOneAndUpdate({ status: "accepted" },{ status: "waiting", mechanicId: null },{ new: true });
