@@ -58,7 +58,7 @@ userCtrl.login = async (req,res)=>{
 		const passwordMatched = await bcrypt.compare(value.password,user.password)
 
 		if(!passwordMatched){
-			return res.json("Invalid email/password")
+			return res.status(409).json("Invalid email/password")
 		}
 
 		const tokenData = {userId:user._id, role:user.role}

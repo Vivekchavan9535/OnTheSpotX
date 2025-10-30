@@ -58,10 +58,10 @@ mechCtrl.update=async(req,res)=>{
 	const body=req.body;
 	const {error,value} = mechanicValidtionSchema.validate(body)
 	if(error){
-		res.status(400).json(error.details)
+		return res.status(400).json(error.details)
 	}
 	try {
-		const mechanic = await Mechanic.findOneAndUpdate({_id:id,userId:req.userId},value,{new:true})
+		const mechanic = await Mechanic.findOneAndUpdate({_id:id, userId:req.userId},value,{ new: true})		
 		console.log(mechanic);
 		
 		if(!mechanic){
