@@ -4,7 +4,7 @@ import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
 
-const webhookUrl = "https://webhook.site/451781a7-b795-4454-8745-a25fb36b866a"
+const webhookUrl = "https://webhook.site/8c5167bb-1394-4827-908c-dda8950698a7"
 const webhookCtrl = {}
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
