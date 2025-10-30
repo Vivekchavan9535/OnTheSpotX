@@ -23,41 +23,47 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		const mechanic = await Mechanic.findOne({ phone: from });
 		if (!mechanic) return res.status(404).json("Mechanic not found");
 
-		// find the latest service request, whether waiting or accepted
-		const request = await ServiceRequest.findOne().sort({ createdAt: -1 });
-		if (!request) return res.status(404).json("No requests found");
+		// // find the latest service request, whether waiting or accepted
+		// const request = await ServiceRequest.findOne().sort({ createdAt: -1 });
+		// if (!request) return res.status(404).json("No requests found");
 
-		// if already accepted by another mechanic
-		if (request.status === "accepted" && String(request.mechanicId) !== String(mechanic._id)) {
-			await sendWhatsApp(from, "⚠️ This request has already been accepted by another mechanic.");
-			return res.status(200).json("Already accepted by someone else");
-		}
+		// // if already accepted by another mechanic
+		// if (request.status === "accepted" && String(request.mechanicId) !== String(mechanic._id)) {
+		// 	await sendWhatsApp(from, "⚠️ This request has already been accepted by another mechanic.");
+		// 	return res.status(200).json("Already accepted by someone else");
+		// }
 
 		// handle ACCEPT (1)
 		if (messageText === "1") {
-			if (request.status === "waiting") {
-				request.status = "accepted";
-				request.mechanicId = mechanic._id;
-				await request.save();
 
-				await sendWhatsApp(from, "You have been assigned the service request.");
-				console.log(from, "accepted the request");
+			// if (request.status === "waiting") {
+			// 	request.status = "accepted";
+			// 	request.mechanicId = mechanic._id;
+			// 	await request.save();
 
-				// notify all others
-				const otherMechanics = request.nearbyMechanics.filter(
-					(m) => String(m.mechanicId) !== String(mechanic._id)
-				);
+			await sendWhatsApp(from, "You have been assigned the service request.");
+			console.log(from, "accepted the request");
 
-				for (const other of otherMechanics) {
-					await sendWhatsApp(other.phone, "This request was accepted by another mechanic.");
-				}
 
-				return res.status(200).json("Mechanic accepted the request");
-			} else {
-				await sendWhatsApp(from, "This request has already been accepted.");
-				return res.status(200).json("Already accepted");
-			}
-		}
+
+			// notify all others
+			// const otherMechanics = request.nearbyMechanics.filter(
+			// 	(m) => String(m.mechanicId) !== String(mechanic._id)
+			// );
+
+			// for (const other of otherMechanics) {
+			// 	await sendWhatsApp(other.phone, "This request was accepted by another mechanic.");
+			// }
+
+			return res.status(200).json("Mechanic accepted the request");
+		} 
+		
+		// else {
+		// 	await sendWhatsApp(from, "This request has already been accepted.");
+		// 	return res.status(200).json("Already accepted");
+		// }
+
+
 
 		// handle REJECT (2)
 		if (messageText === "2") {
@@ -76,3 +82,4 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 };
 
 export default webhookCtrl;
+
