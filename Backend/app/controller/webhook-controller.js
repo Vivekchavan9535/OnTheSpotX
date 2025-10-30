@@ -21,7 +21,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(409).json("Response is empty")
 		}
 
-		const mechanic = await Mechanic.findOne({ phone: 6364151684 })
+		const mechanic = await Mechanic.findOne({ phone: from })
 		if (!mechanic) return res.status(404).json("Mechanic not found");
 
 		const request = await ServiceRequest.findOne({ status: "waiting" });
@@ -31,9 +31,15 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 		// Handle responses
 		if (messageText === "1") {
-			request.status = "accepted"
+			request.status = "accepted";
 			request.mechanicId = mechanic._id;
-			await request.save()
+			await request.save();
+
+			if (request.status === "accepted") {
+				await sendWhatsApp(from, "This request has already been accepted by another mechanic.");
+				return res.status(200).json("Already accepted");
+			}
+
 			await sendWhatsApp(from, "You have been assigned the service request");
 
 			const otherMechanics = request.nearbyMechanics.filter((m) => m.mechanicId !== mechanic._id);
@@ -44,13 +50,22 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(200).json("Mechanic accepted the request");
 		}
 
-		
-
-		if (messageText === "2") {
-			console.log("Mechanic rejected the request");
-			return res.status(200).json("rejected");
+		// Notify all other mechanics except the one who accepted
+		for (const mech of request.nearbyMechanics) {
+			if (String(mech.mechanicId) !== String(mechanic._id)) {
+				await sendWhatsApp(
+					mech.phone,
+					"ℹ️ This request was accepted by another mechanic."
+				);
+			}
 		}
 
+
+		if (messageText === "2") {
+			await sendWhatsApp(from, "You have rejected this request.")
+			console.log("Mechanic rejected the request");
+			return res.status(200).json("Mechanic rejected the request");
+		}
 
 		//if not 1 or 2 
 		console.log("Not valid response")
