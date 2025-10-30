@@ -26,42 +26,39 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 		const request = await ServiceRequest.findOne({ status: "waiting" });
 		if (!request) return res.status(404).json("No pending requests");
-		
 
-		if (request.status === "accepted") {
+		await sendWhatsApp(from, "You have been assigned the service request");
+		console.log(from, "You have been assigned the service request");
+
+		// Handle accepted condition
+		if (request.status === "accepted" && String(request.mechanicId) !== String(mechanic._id)) {
 			await sendWhatsApp(from, "This request has already been accepted by another mechanic.");
 			return res.status(200).json("Already accepted");
 		}
-		
 
 		// Handle responses
 		if (messageText === "1") {
-			request.status = "accepted";
-			request.mechanicId = mechanic._id;
-			await request.save();
+			if (request.status === "waiting") {
+				request.status = "accepted";
+				request.mechanicId = mechanic._id;
+				await request.save();
 
+				await sendWhatsApp(from, "You have been assigned the service request ✅");
+				console.log(from, "You have been assigned the service request");
 
-
-
-			await sendWhatsApp(from, "You have been assigned the service request");
-			console.log(from, "You have been assigned the service request");
-
-
-			const otherMechanics = request.nearbyMechanics.filter((m) => m.mechanicId !== mechanic._id);
-			for (const other of otherMechanics) {
-				await sendWhatsApp(other.phone, "Request already accepted by another mechanic.");
-			}
-
-			return res.status(200).json("Mechanic accepted the request");
-		}
-
-		// Notify all other mechanics except the one who accepted
-		for (const mech of request.nearbyMechanics) {
-			if (String(mech.mechanicId) !== String(mechanic._id)) {
-				await sendWhatsApp(
-					mech.phone,
-					"This request was accepted by another mechanic."
+				// Notify others
+				const otherMechanics = request.nearbyMechanics.filter(
+					(m) => String(m.mechanicId) !== String(mechanic._id)
 				);
+				
+				for (const other of otherMechanics) {
+					await sendWhatsApp(other.phone, "Request already accepted by another mechanic.");
+				}
+
+				return res.status(200).json("Mechanic accepted the request");
+			} else {
+				await sendWhatsApp(from, "This request has already been accepted.");
+				return res.status(200).json("Already accepted");
 			}
 		}
 
