@@ -1,13 +1,13 @@
-import serviceRequest from '../model/serviceRequest-mode.js';
-import sendWhatsApp from './notification-controller.js';
+// import serviceRequest from '../model/serviceRequest-mode.js';
+// import sendWhatsApp from './notification-controller.js';
 
 
-const nextMechCtrl={};
+// const nextMechCtrl={};
 
-nextMechCtrl.moveToNextMechanic=async(req,res)=>{
-	try {
+// nextMechCtrl.moveToNextMechanic=async(req,res)=>{
+// 	try {
 		
-	} catch (error) {
+// 	} catch (error) {
 		
-	}
-}
+// 	}
+// }
