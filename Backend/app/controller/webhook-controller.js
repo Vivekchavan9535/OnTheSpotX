@@ -27,22 +27,22 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		const request = await ServiceRequest.findOne({ status: "waiting" });
 		if (!request) return res.status(404).json("No pending requests");
 
-
-		if (request.status === "accepted") {
-			await sendWhatsApp(from, "This request has already been accepted by another mechanic.");
-			return res.status(200).json("Already accepted");
-		}
-
 		// Handle responses
 		if (messageText === "1") {
 			request.status = "accepted";
 			request.mechanicId = mechanic._id;
 			await request.save();
 
-			
+
+			if (request.status === "accepted") {
+				await sendWhatsApp(from, "This request has already been accepted by another mechanic.");
+				return res.status(200).json("Already accepted");
+			}
+
+
 			await sendWhatsApp(from, "You have been assigned the service request");
 			console.log(from, "You have been assigned the service request");
-			
+
 
 			const otherMechanics = request.nearbyMechanics.filter((m) => m.mechanicId !== mechanic._id);
 			for (const other of otherMechanics) {
