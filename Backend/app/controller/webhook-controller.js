@@ -4,7 +4,7 @@ import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
 
-const webhookUrl = "https://webhook.site/19f961e6-37ea-46f6-81dd-e7895e141b0d"
+const webhookUrl = "https://webhook.site/451781a7-b795-4454-8745-a25fb36b866a"
 const webhookCtrl = {}
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
@@ -21,16 +21,28 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(409).json("Response is empty")
 		}
 
-		const fromMech = await Mechanic.findOne({phone:from})
+		const mechanic = await Mechanic.findOne({ phone: 6364151684 })
+		if (!mechanic) return res.status(404).json("Mechanic not found");
+
+		const request = await ServiceRequest.findOne({ status: "waiting" });
+		if (!request) return res.status(404).json("No pending requests");
+
+
 
 		// Handle responses
 		if (messageText === "1") {
-			await sendWhatsApp(from,"Thankyou")
-			console.log("Mechanic accepted the request");
-			return res.status(200).json("accepted");
-		}
+			request.status = "accepted"
+			request.mechanicId = mechanic._id;
+			await request.save()
+			await sendWhatsApp(from, "✅ You have been assigned the service request. Please contact the customer.");
 
-		
+			const otherMechanics = request.nearbyMechanics.filter((m) => m.mechanicId.toString() !== mechanic._id.toString());
+			for (const other of otherMechanics) {
+				await sendWhatsApp(other.phone, "Request already accepted by another mechanic.");
+			}
+
+			return res.status(200).json("Mechanic accepted the request");
+		}
 
 		if (messageText === "2") {
 			console.log("Mechanic rejected the request");
@@ -40,7 +52,6 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		//if not 1 or 2 
 		console.log("Not valid response")
 		return res.status(409).json("Not valid response")
-		
 
 	} catch (error) {
 		console.log(error.message);
