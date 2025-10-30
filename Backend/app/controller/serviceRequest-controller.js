@@ -24,57 +24,53 @@ serviceReqCtrl.create = async (req, res) => {
 					return { ...mech._doc, distanceMeters };
 				}
 				return null;
-			})
-			.filter(Boolean)
-			.filter((m) => m.distanceMeters <= 5000)
-			.sort((a, b) => a.distanceMeters - b.distanceMeters);
+			}).filter((m) => m.distanceMeters <= 5000).sort((a, b) => a.distanceMeters - b.distanceMeters);
 
-		// 3️⃣ If no nearby mechanics
+		// If no nearby mechanics
 		if (nearbyMechanics.length === 0) {
 			return res.status(404).json("No mechanics nearby");
 		}
 
-		// Create service request with extra fields
-		const newReq = await ServiceRequest.create({
-			...body,
-			status: "waiting",
-			nearbyMechanics: nearbyMechanics.map((m) => ({
-				mechanicId: m._id,
-				name: m.name,
-				phone: m.phone,
-				distanceMeters: m.distanceMeters,
-				response: "pending",
-			})),
-			currentMechanicIndex: 0,
-			lastNotifiedAt: new Date(),
-		});
+		// // Create service request with extra fields
+		// const newReq = await ServiceRequest.create({
+		// 	...body,
+		// 	status: "waiting",
+		// 	nearbyMechanics: nearbyMechanics.map((m) => ({
+		// 		mechanicId: m._id,
+		// 		name: m.name,
+		// 		phone: m.phone,
+		// 		distanceMeters: m.distanceMeters,
+		// 		response: "pending",
+		// 	})),
+		// 	currentMechanicIndex: 0,
+		// 	lastNotifiedAt: new Date(),
+		// });
 
-		// Send to first mechanic
-		const nearestMechanic = nearbyMechanics[0];
-		const distance =
-			nearestMechanic.distanceMeters < 1000 ? `${nearestMechanic.distanceMeters} m` : `${(nearestMechanic.distanceMeters / 1000).toFixed(1)} km`;
+		console.log(nearbyMechanics);
 
-		await sendWhatsApp(
-			Number(nearestMechanic.phone),
-			`🚨 New Service Request 🚨\n
+		nearbyMechanics.map((mech) => {
+			//distance calculation in m and km for whatsapp distance body
+			const distance = mech.distanceMeters < 1000
+		? `${mech.distanceMeters} m`
+		: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
+
+			sendWhatsApp(
+				Number(mech.phone),
+				`🚨 New Service Request 🚨\n
 Vehicle: ${body.vehicleType}
 Issue: ${body.issueDescription}
 Location: ${body.userLocation.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
-		);
-
-		console.log(`✅ Sent to first mechanic: ${nearestMechanic.name}`);
-
-		res.json(201).json({
-			message: "Request created & sent to mechanic",
-			requestId: newReq._id,
-			nearestMechanic,
-		});
+			);
+			console.log(`✅ Sent to nearby mechanics : ${mech.name}`);
+		})
+		res.status(201).json({ message: "Requests sent to all nearby mechanics" });
 	} catch (error) {
 		console.log("❌ Error in create:", error.message);
 		res.status(500).json(error.message);
 	}
+
 };
 
 export default serviceReqCtrl;

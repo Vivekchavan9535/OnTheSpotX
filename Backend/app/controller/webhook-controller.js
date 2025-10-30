@@ -1,6 +1,7 @@
 import axios from 'axios';
 import ServiceRequest from "../model/serviceRequest-model.js";
 import Mechanic from "../model/mechanic-model.js";
+import sendWhatsApp from "../controller/notification-controller.js";
 
 
 const webhookUrl = "https://webhook.site/19f961e6-37ea-46f6-81dd-e7895e141b0d"
@@ -20,8 +21,11 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(409).json("Response is empty")
 		}
 
+		const fromMech = await Mechanic.findOne({phone:from})
+
 		// Handle responses
 		if (messageText === "1") {
+			await sendWhatsApp(from,"Thankyou")
 			console.log("Mechanic accepted the request");
 			return res.status(200).json("accepted");
 		}

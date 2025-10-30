@@ -1,7 +1,5 @@
 import axios from 'axios';
 
-
-
 const instanceId = "instance147843";
 const token = "9u7numn8ug2qx1xy";
 
