@@ -31,28 +31,26 @@ serviceReqCtrl.create = async (req, res) => {
 			return res.status(404).json("No mechanics nearby");
 		}
 
-		// // Create service request with extra fields
-		// const newReq = await ServiceRequest.create({
-		// 	...body,
-		// 	status: "waiting",
-		// 	nearbyMechanics: nearbyMechanics.map((m) => ({
-		// 		mechanicId: m._id,
-		// 		name: m.name,
-		// 		phone: m.phone,
-		// 		distanceMeters: m.distanceMeters,
-		// 		response: "pending",
-		// 	})),
-		// 	currentMechanicIndex: 0,
-		// 	lastNotifiedAt: new Date(),
-		// });
+		// Create service request with extra fields
+		const newReq = await ServiceRequest.create({
+			...body,
+			status: "waiting",
+			nearbyMechanics: nearbyMechanics.map(m => ({
+				mechanicId: m._id,
+				name: m.name,
+				phone: m.phone,
+				distanceMeters: m.distanceMeters,
+			})),
+			currentMechanicIndex: 0,
+		});
 
 		console.log(nearbyMechanics);
 
 		nearbyMechanics.map((mech) => {
 			//distance calculation in m and km for whatsapp distance body
 			const distance = mech.distanceMeters < 1000
-		? `${mech.distanceMeters} m`
-		: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
+				? `${mech.distanceMeters} m`
+				: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
 			sendWhatsApp(
 				Number(mech.phone),
