@@ -38,7 +38,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		}
 
 		if(messageText==="hello"){
-			await sendWhatsApp(from,`Fuckyou 👈🏽 ${fromMech}`)
+			await sendWhatsApp(from,`Fuckyou 👈🏽 ${fromMech.firstName}`)
 			console.log("Mechanic accepted the request");
 			return res.status(200).json("accepted");
 		}
