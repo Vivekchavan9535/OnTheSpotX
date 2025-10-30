@@ -54,8 +54,10 @@ app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),servic
 app.post('/service-request',userAuthentication,userAuthorization(['customer']),serviceReqCtrl.create)
 
 
+
 //whatsapp msg response from nearest mechanic 1 - accept, 2-reject
 app.post('/whatsapp',webhookCtrl.handleWhatsapp)
+app.post("/reset", serviceReqCtrl.resetStatus);
 
 app.listen(port, () => {
 	console.log(`Server is running on ${port}`)
