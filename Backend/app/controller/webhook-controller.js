@@ -12,7 +12,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		await axios.post(webhookUrl, { received: req.body })
 
 		//response object from whatsapp on render
-		const messageText = (req.body?.data?.body || "").trim();
+		const messageText = (req.body?.data?.body || "").toLowerCase().trim();
 		const from = (req.body?.data?.from || "").trim().replace("@c.us", "");
 
 		console.log(`Message : ${messageText}, \n From : ${from}`);
@@ -38,7 +38,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		}
 
 		if(messageText==="hello"){
-			await sendWhatsApp(from,`Fuckyou 👈🏽 ${fromMech.firstName}`)
+			await sendWhatsApp(from,`Fuckyou 👈🏽`)
 			console.log("Mechanic accepted the request");
 			return res.status(200).json("accepted");
 		}
