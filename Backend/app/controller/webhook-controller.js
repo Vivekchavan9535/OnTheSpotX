@@ -34,9 +34,9 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			request.status = "accepted"
 			request.mechanicId = mechanic._id;
 			await request.save()
-			await sendWhatsApp(from, "✅ You have been assigned the service request. Please contact the customer.");
+			await sendWhatsApp(from, "You have been assigned the service request");
 
-			const otherMechanics = request.nearbyMechanics.filter((m) => m.mechanicId.toString() !== mechanic._id.toString());
+			const otherMechanics = request.nearbyMechanics.filter((m) => m.mechanicId !== mechanic._id);
 			for (const other of otherMechanics) {
 				await sendWhatsApp(other.phone, "Request already accepted by another mechanic.");
 			}
@@ -44,10 +44,13 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(200).json("Mechanic accepted the request");
 		}
 
+		
+
 		if (messageText === "2") {
 			console.log("Mechanic rejected the request");
 			return res.status(200).json("rejected");
 		}
+
 
 		//if not 1 or 2 
 		console.log("Not valid response")
