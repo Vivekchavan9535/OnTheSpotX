@@ -71,4 +71,24 @@ Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 
 };
 
+
+
+//Reset service request status (for testing only)
+
+serviceReqCtrl.resetStatus = async (req, res) => {
+  try {
+    const request = await ServiceRequest.findOneAndUpdate({ status: "accepted" },{ status: "waiting", mechanicId: null },{ new: true });
+
+    if (!request) {
+      return res.status(404).json("No accepted requests found");
+    }
+
+    console.log("Status reset to waiting for:", request._id);
+    res.status(200).json("Status reset to waiting");
+  } catch (err) {
+    console.log("Error resetting status:", err.message);
+    res.status(500).json(err.message);
+  }
+};
+
 export default serviceReqCtrl;
