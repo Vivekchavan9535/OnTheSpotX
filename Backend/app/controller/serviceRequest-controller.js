@@ -14,8 +14,7 @@ serviceReqCtrl.create = async (req, res) => {
 		const mechanics = await Mechanic.find();
 
 		// Filter and calculate distance (within 5km)
-		const nearbyMechanics = mechanics
-			.map((mech) => {
+		const nearbyMechanics = mechanics.map((mech) => {
 				if (mech.location?.latitude && mech.location?.longitude) {
 					const distanceMeters = getDistance(
 						{ latitude: body.userLocation.latitude, longitude: body.userLocation.longitude },
@@ -31,18 +30,18 @@ serviceReqCtrl.create = async (req, res) => {
 			return res.status(404).json("No mechanics nearby");
 		}
 
-		// Create service request with extra fields
-		const newReq = await ServiceRequest.create({
-			...body,
-			status: "waiting",
-			nearbyMechanics: nearbyMechanics.map(m => ({
-				mechanicId: m._id,
-				name: m.name,
-				phone: m.phone,
-				distanceMeters: m.distanceMeters,
-			})),
-			currentMechanicIndex: 0,
-		});
+		// // Create service request with extra fields
+		// const newReq = await ServiceRequest.create({
+		// 	...body,
+		// 	status: "waiting",
+		// 	nearbyMechanics: nearbyMechanics.map(m => ({
+		// 		mechanicId: m._id,
+		// 		name: m.name,
+		// 		phone: m.phone,
+		// 		distanceMeters: m.distanceMeters,
+		// 	})),
+		// 	currentMechanicIndex: 0,
+		// });
 
 		console.log(nearbyMechanics);
 
@@ -52,7 +51,7 @@ serviceReqCtrl.create = async (req, res) => {
 				? `${mech.distanceMeters} m`
 				: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
-			sendWhatsApp(
+			 sendWhatsApp(
 				Number(mech.phone),
 				`🚨 New Service Request 🚨\n
 Vehicle: ${body.vehicleType}
@@ -61,7 +60,8 @@ Location: ${body.userLocation.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 			);
-			console.log(`Sent to nearby mechanics : ${mech.name}`);
+			
+			console.log(`Sent to nearby mechanics : ${mech.firstName}`);
 		})
 		res.status(201).json({ message: "Requests sent to all nearby mechanics" });
 	} catch (error) {
