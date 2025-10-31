@@ -20,20 +20,19 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		const mechanic = await Mechanic.findOne({ phone: from });
 		if (!mechanic) return res.status(404).json("Mechanic not found");
 
-		// Always check if this mechanic already accepted a request
+		// try to find the request accepted by this mechanic
 		let request = await ServiceRequest.findOne({
-			$or: [
-				{ status: "waiting" },
-				{ status: "accepted", mechanicId: mechanic._id }
-			]
-		}).sort({ createdAt: -1 });
+			status: "accepted",
+			mechanicId: mechanic._id
+		});
 
+		// if none then find the latest waiting request
 		if (!request) {
-			await sendWhatsApp(from, "⚠️ No active or pending requests found.");
-			return res.status(404).json("No relevant request found");
+			request = await ServiceRequest.findOne({ status: "waiting" }).sort({ createdAt: -1 });
 		}
 
-		// ✅ Handle ACCEPT (1)
+
+		// Handle accept (1)
 		if (messageText === "1") {
 			if (request.status === "waiting") {
 				request.status = "accepted";
@@ -74,6 +73,22 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				await request.save();
 
 				await sendWhatsApp(from, "❌ You have rejected this request. It’s now open again for others.");
+
+				//re notify nearby mechanics // im using for..of loop bcz sendWhatsapp is async
+				for (const mech of request.nearbyMechanics) {
+					await sendWhatsApp(
+						Number(mech.phone),
+						`🚨 New Service Request 🚨\n
+Vehicle: ${body.vehicleType}
+Issue: ${body.issueDescription}
+Location: ${body.userLocation.address}
+Distance: ${distance}\n
+Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
+					);
+
+					console.log(`Sent to nearby mechanics : ${mech.firstName}`);
+				}
+
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
 				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
