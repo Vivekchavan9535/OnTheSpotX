@@ -59,23 +59,34 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			}
 		}
 
-		// handle REJECT (2)
 		// Handle REJECT (2)
 		if (messageText === "2") {
-			// Only reset if this mechanic was the one who accepted
-			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
+			try {
+				const request = await ServiceRequest.findOne({
+					mechanicId: mechanic._id,
+					status: "accepted"
+				})
+
+				if (!request) {
+					await sendWhatsApp(from, "You are not assigned to any active request.");
+					console.log(`Mechanic ${from} tried to reject but was not assigned to any request.`);
+					return res.status(404).json("No active request found for this mechanic");
+				}
+
+				//Reset the request to waiting so others can take it
 				request.status = "waiting";
 				request.mechanicId = null;
 				await request.save();
 
+
 				await sendWhatsApp(from, "❌ You have rejected this request. It's now open again for others.");
-				console.log(`Mechanic ${from} rejected the request — reopened.`);
-			} else {
-				await sendWhatsApp(from, "❌ You have rejected this request.");
-				console.log(`Mechanic ${from} rejected but was not the assigned one.`);
+				console.log(`Mechanic ${from} rejected and reopened the request.`);
+				return res.status(200).json("Mechanic rejected the request successfully");
+			} catch (error) {
+				console.error("Error handling rejection:", err.message);
+				return res.status(500).json(err.message);
 			}
 
-			return res.status(200).json("Mechanic rejected the request");
 		}
 
 	} catch (error) {
@@ -87,18 +98,18 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 
 webhookCtrl.resetAllRequests = async (req, res) => {
-  try {
-    const result = await ServiceRequest.updateMany(
-      { status: "accepted" },
-      { $set: { status: "waiting", mechanicId: null } }
-    );
+	try {
+		const result = await ServiceRequest.updateMany(
+			{ status: "accepted" },
+			{ $set: { status: "waiting", mechanicId: null } }
+		);
 
-    console.log(`Reset ${result.modifiedCount} accepted requests to waiting`);
-    res.status(200).json({ message: "All accepted requests reset to waiting", modified: result.modifiedCount });
-  } catch (err) {
-    console.log("Error resetting requests:", err.message);
-    res.status(500).json({ error: err.message });
-  }
+		console.log(`Reset ${result.modifiedCount} accepted requests to waiting`);
+		res.status(200).json({ message: "All accepted requests reset to waiting", modified: result.modifiedCount });
+	} catch (err) {
+		console.log("Error resetting requests:", err.message);
+		res.status(500).json({ error: err.message });
+	}
 };
 
 
