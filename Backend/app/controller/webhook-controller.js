@@ -84,4 +84,22 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	}
 };
 
+
+
+webhookCtrl.resetAllRequests = async (req, res) => {
+  try {
+    const result = await ServiceRequest.updateMany(
+      { status: "accepted" },
+      { $set: { status: "waiting", mechanicId: null } }
+    );
+
+    console.log(`Reset ${result.modifiedCount} accepted requests to waiting`);
+    res.status(200).json({ message: "All accepted requests reset to waiting", modified: result.modifiedCount });
+  } catch (err) {
+    console.log("Error resetting requests:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 export default webhookCtrl;

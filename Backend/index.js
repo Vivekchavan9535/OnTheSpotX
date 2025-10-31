@@ -57,7 +57,7 @@ app.post('/service-request',userAuthentication,userAuthorization(['customer']),s
 
 //whatsapp msg response from nearest mechanic 1 - accept, 2-reject
 app.post('/whatsapp',webhookCtrl.handleWhatsapp)
-app.post("/reset", serviceReqCtrl.resetStatus);
+app.post("/reset", webhookCtrl.resetAllRequests);
 
 app.listen(port, () => {
 	console.log(`Server is running on ${port}`)
