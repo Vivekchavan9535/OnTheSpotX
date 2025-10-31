@@ -10,30 +10,30 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	try {
 		await axios.post(webhookUrl, { received: req.body });
 
-		// response object from WhatsApp on render
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
 		const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "");
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
 
-		if (!messageText) {
-			return res.status(409).json("Response is empty");
-		}
+		if (!messageText) return res.status(409).json("Response is empty");
 
 		const mechanic = await Mechanic.findOne({ phone: from });
 		if (!mechanic) return res.status(404).json("Mechanic not found");
 
-		// find the latest service request, whether waiting or accepted
-		const request = await ServiceRequest.findOne().sort({ createdAt: -1 });
-		if (!request) return res.status(404).json("No requests found");
+		// Always check if this mechanic already accepted a request
+		let request = await ServiceRequest.findOne({
+			$or: [
+				{ status: "waiting" },
+				{ status: "accepted", mechanicId: mechanic._id }
+			]
+		}).sort({ createdAt: -1 });
 
-		// if already accepted by another mechanic
-		if (request.status === "accepted" && String(request.mechanicId) !== String(mechanic._id)) {
-			await sendWhatsApp(from, "⚠️ This request has already been accepted by another mechanic.");
-			return res.status(200).json("Already accepted by someone else");
+		if (!request) {
+			await sendWhatsApp(from, "⚠️ No active or pending requests found.");
+			return res.status(404).json("No relevant request found");
 		}
 
-		// handle ACCEPT (1)
+		// ✅ Handle ACCEPT (1)
 		if (messageText === "1") {
 			if (request.status === "waiting") {
 				request.status = "accepted";
@@ -41,9 +41,9 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				await request.save();
 
 				await sendWhatsApp(from, "✅ You have been assigned the service request.");
-				console.log(from, "accepted the request");
+				console.log(`${from} accepted the request`);
 
-				// notify all others
+				// Notify others
 				const otherMechanics = request.nearbyMechanics.filter(
 					(m) => String(m.mechanicId) !== String(mechanic._id)
 				);
@@ -53,41 +53,38 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				}
 
 				return res.status(200).json("Mechanic accepted the request");
-			} else {
-				await sendWhatsApp(from, "⚠️ This request has already been accepted.");
-				return res.status(200).json("Already accepted");
 			}
+
+			// If already accepted by this mechanic
+			if (String(request.mechanicId) === String(mechanic._id)) {
+				await sendWhatsApp(from, "⚠️ You have already accepted this request.");
+				return res.status(200).json("Already accepted by same mechanic");
+			}
+
+			// If accepted by someone else
+			await sendWhatsApp(from, "⚠️ This request was already accepted by another mechanic.");
+			return res.status(200).json("Already accepted by someone else");
 		}
 
-		// Handle REJECT (2)
+		// ✅ Handle REJECT (2)
 		if (messageText === "2") {
-			try {
-				const request = await ServiceRequest.findOne({
-					mechanicId: mechanic._id,
-					status: "accepted"
-				})
-
-				if (!request) {
-					await sendWhatsApp(from, "You are not assigned to any active request.");
-					console.log(`Mechanic ${from} tried to reject but was not assigned to any request.`);
-					return res.status(404).json("No active request found for this mechanic");
-				}
-
-				//Reset the request to waiting so others can take it
+			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
 				request.status = "waiting";
 				request.mechanicId = null;
 				await request.save();
 
-
-				await sendWhatsApp(from, "❌ You have rejected this request. It's now open again for others.");
+				await sendWhatsApp(from, "❌ You have rejected this request. It’s now open again for others.");
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
-				return res.status(200).json("Mechanic rejected the request successfully");
-			} catch (error) {
-				console.error("Error handling rejection:", err.message);
-				return res.status(500).json(err.message);
+				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
 
+			await sendWhatsApp(from, "❌ You have rejected this request.");
+			console.log(`Mechanic ${from} rejected but was not assigned.`);
+			return res.status(200).json("Mechanic rejected but not assigned");
 		}
+
+		console.log("Not valid response");
+		return res.status(409).json("Not valid response");
 
 	} catch (error) {
 		console.log("Error in webhook:", error.message);
@@ -95,8 +92,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	}
 };
 
-
-
+// ✅ Optional Reset API (for testing)
 webhookCtrl.resetAllRequests = async (req, res) => {
 	try {
 		const result = await ServiceRequest.updateMany(
@@ -105,12 +101,14 @@ webhookCtrl.resetAllRequests = async (req, res) => {
 		);
 
 		console.log(`Reset ${result.modifiedCount} accepted requests to waiting`);
-		res.status(200).json({ message: "All accepted requests reset to waiting", modified: result.modifiedCount });
+		res.status(200).json({
+			message: "All accepted requests reset to waiting",
+			modified: result.modifiedCount
+		});
 	} catch (err) {
 		console.log("Error resetting requests:", err.message);
 		res.status(500).json({ error: err.message });
 	}
 };
-
 
 export default webhookCtrl;
