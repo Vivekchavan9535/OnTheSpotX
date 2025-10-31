@@ -26,7 +26,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
     // Mechanic accepted (sent '1')
     if (messageText === "1") {
       await sendWhatsApp(from, "You have been assigned the service request.");
-      console.log(`✅ ${from} accepted the request`);
+      console.log(`${from} accepted the request`);
 
       // You can update the ServiceRequest here if needed
       // await ServiceRequest.findOneAndUpdate({ status: "waiting" }, { status: "accepted", mechanicId: mechanic._id });
