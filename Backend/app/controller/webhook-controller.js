@@ -8,8 +8,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
   try {
     // Extract the incoming WhatsApp message data
     const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
-    const from = (req.body?.data?.from || "").trim().replace("@c.us", "");
-
+    const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "")
     console.log(`Message: ${messageText}, From: ${from}`);
 
     if (!messageText) {
