@@ -60,14 +60,23 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		}
 
 		// handle REJECT (2)
+		// Handle REJECT (2)
 		if (messageText === "2") {
-			await sendWhatsApp(from, "❌ You have rejected this request.");
-			console.log("Mechanic rejected the request");
+			// Only reset if this mechanic was the one who accepted
+			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
+				request.status = "waiting";
+				request.mechanicId = null;
+				await request.save();
+
+				await sendWhatsApp(from, "❌ You have rejected this request. It's now open again for others.");
+				console.log(`Mechanic ${from} rejected the request — reopened.`);
+			} else {
+				await sendWhatsApp(from, "❌ You have rejected this request.");
+				console.log(`Mechanic ${from} rejected but was not the assigned one.`);
+			}
+
 			return res.status(200).json("Mechanic rejected the request");
 		}
-
-		console.log("Not valid response");
-		return res.status(409).json("Not valid response");
 
 	} catch (error) {
 		console.log("Error in webhook:", error.message);
