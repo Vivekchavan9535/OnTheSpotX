@@ -79,9 +79,9 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 					await sendWhatsApp(
 						Number(mech.phone),
 						`🚨 New Service Request 🚨\n
-Vehicle: ${body.vehicleType}
-Issue: ${body.issueDescription}
-Location: ${body.userLocation.address}
+Vehicle: ${request.vehicleType}
+Issue: ${request.issueDescription}
+Location: ${request.userLocation.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 					);
