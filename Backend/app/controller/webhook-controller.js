@@ -74,14 +74,21 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 				await sendWhatsApp(from, "❌ You have rejected this request. It’s now open again for others.");
 
+
+
 				//re notify nearby mechanics // im using for..of loop bcz sendWhatsapp is async
-				for (const mech of request.nearbyMechanics) {
+				for (const mech of request.nearbyMechanics.filter((mech)=>mech.phone !==from)) {
+
+					const distance = mech.distanceMeters < 1000
+						? `${mech.distanceMeters} m`
+						: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
+
 					await sendWhatsApp(
 						Number(mech.phone),
 						`🚨 New Service Request 🚨\n
 Vehicle: ${request.vehicleType}
 Issue: ${request.issueDescription}
-Location: ${request.userLocation.address}
+Location: ${request.userLocation?.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 					);
