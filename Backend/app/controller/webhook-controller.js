@@ -65,8 +65,11 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			return res.status(200).json("Already accepted by someone else");
 		}
 
+
+
 		// ✅ Handle REJECT (2)
-		if (messageText === "2") {
+		if (messageText === "2") {	
+			//handle reject and re notify
 			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
 				request.status = "waiting";
 				request.mechanicId = null;
@@ -76,15 +79,18 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 
 
+
 				//re notify nearby mechanics // im using for..of loop bcz sendWhatsapp is async
-				for (const mech of request.nearbyMechanics.filter((mech)=>mech.phone !==from)) {
+				for (const mech of request.nearbyMechanics.filter((mech) => String(mech.phone) !== String(from))) {
+
+					console.log(mech.phone !== from);
 
 					const distance = mech.distanceMeters < 1000
 						? `${mech.distanceMeters} m`
 						: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
 					await sendWhatsApp(
-						Number(mech.phone),
+						mech.phone,
 						`🚨 New Service Request 🚨\n
 Vehicle: ${request.vehicleType}
 Issue: ${request.issueDescription}
@@ -99,7 +105,6 @@ Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
 				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
-
 			await sendWhatsApp(from, "❌ You have rejected this request.");
 			console.log(`Mechanic ${from} rejected but was not assigned.`);
 			return res.status(200).json("Mechanic rejected but not assigned");
@@ -113,6 +118,12 @@ Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 		res.status(500).json("webhook error: " + error.message);
 	}
 };
+
+
+
+
+
+
 
 // ✅ Optional Reset API (for testing)
 webhookCtrl.resetAllRequests = async (req, res) => {
@@ -134,3 +145,13 @@ webhookCtrl.resetAllRequests = async (req, res) => {
 };
 
 export default webhookCtrl;
+
+
+
+
+
+
+
+{/*
+	
+*/}

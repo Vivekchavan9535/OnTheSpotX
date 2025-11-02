@@ -38,16 +38,12 @@ const serviceRequestSchema = new mongoose.Schema({
 			},
 		},
 	],
-	currentMechanicIndex: {
+	mechanicId: {
 		type: Number,
 		default: 0,
 	},
 	lastNotifiedAt: {
 		type: Date,
-	},
-	acceptedMechanic: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Mechanic",
 	},
 }, { timestamps: true });
 

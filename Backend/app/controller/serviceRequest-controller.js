@@ -15,35 +15,36 @@ serviceReqCtrl.create = async (req, res) => {
 
 		// Filter and calculate distance (within 5km)
 		const nearbyMechanics = mechanics.map((mech) => {
-				if (mech.location?.latitude && mech.location?.longitude) {
-					const distanceMeters = getDistance(
-						{ latitude: body.userLocation.latitude, longitude: body.userLocation.longitude },
-						{ latitude: mech.location.latitude, longitude: mech.location.longitude }
-					);
-					return { ...mech._doc, distanceMeters };
-				}
-				return null;
-			}).filter((m) => m.distanceMeters <= 5000).sort((a, b) => a.distanceMeters - b.distanceMeters);
+			if (mech.location?.latitude && mech.location?.longitude) {
+				const distanceMeters = getDistance(
+					{ latitude: body.userLocation.latitude, longitude: body.userLocation.longitude },
+					{ latitude: mech.location.latitude, longitude: mech.location.longitude }
+				);
+				return { ...mech._doc, distanceMeters };
+			}
+			return null;
+		}).filter((m) => m.distanceMeters <= 5000).sort((a, b) => a.distanceMeters - b.distanceMeters);
 
 		// If no nearby mechanics
 		if (nearbyMechanics.length === 0) {
 			return res.status(404).json("No mechanics nearby");
 		}
 
-		// // Create service request with extra fields
-		// const newReq = await ServiceRequest.create({
-		// 	...body,
-		// 	status: "waiting",
-		// 	nearbyMechanics: nearbyMechanics.map(m => ({
-		// 		mechanicId: m._id,
-		// 		name: m.name,
-		// 		phone: m.phone,
-		// 		distanceMeters: m.distanceMeters,
-		// 	})),
-		// 	currentMechanicIndex: 0,
-		// });
+		// Create service request with extra fields
+		const newReq = await ServiceRequest.create({
+			...body,
+			status: "waiting",
+			nearbyMechanics: nearbyMechanics.map(mech => ({
+				mechanicId: mech._id,
+				name: mech.name,
+				phone: mech.phone,
+				distanceMeters: mech.distanceMeters,
+			})),
+		});
 
-		console.log(nearbyMechanics);
+		
+
+		console.log("nearby mechanics", nearbyMechanics);
 
 		nearbyMechanics.map((mech) => {
 			//distance calculation in m and km for whatsapp distance body
@@ -51,7 +52,7 @@ serviceReqCtrl.create = async (req, res) => {
 				? `${mech.distanceMeters} m`
 				: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
-			 sendWhatsApp(
+			sendWhatsApp(
 				Number(mech.phone),
 				`🚨 New Service Request 🚨\n
 Vehicle: ${body.vehicleType}
@@ -60,9 +61,13 @@ Location: ${body.userLocation.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 			);
-			
+
 			console.log(`Sent to nearby mechanics : ${mech.firstName}`);
 		})
+
+		const request = await ServiceRequest.findOne().sort({createdAt:-1})
+		console.log("newReq All nearby mechanics",request);
+
 		res.status(201).json({ message: "Requests sent to all nearby mechanics" });
 	} catch (error) {
 		console.log("❌ Error in create:", error.message);
@@ -70,5 +75,8 @@ Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 	}
 
 };
+
+
+
 
 export default serviceReqCtrl;
