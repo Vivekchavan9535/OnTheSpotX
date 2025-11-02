@@ -99,13 +99,13 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 					sendWhatsApp(mech.phone,
   `🔧 *Hey Mechanic!* You have a new service request:\n\n` +
-  `🚗 *Vehicle:* ${req.body.vehicleType}\n` +
-  `⚠️ *Issue:* ${req.body.issueDescription}\n` +
-  `📍 *Location:* ${req.body.userLocation?.address}\n` +
+  `🚗 *Vehicle:* ${request?.vehicleType}\n` +
+  `⚠️ *Issue:* ${request?.issueDescription}\n` +
+  `📍 *Location:* ${request?.userLocation?.address}\n` +
   `📏 *Distance:* ${distance}\n\n` +
   `Reply with:\n` +
-  `✅ *1* — To Accept\n` +
-  `❌ *2* — To Reject`
+  `✅ *1* — *Accept*\n` +
+  `❌ *2* — *Reject*`
 			 )
 					console.log(`Sent to nearby mechanics : ${mech?.name}`);
 				}
