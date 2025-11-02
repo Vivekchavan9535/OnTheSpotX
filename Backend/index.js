@@ -40,7 +40,7 @@ app.get('/user/:id', userAuthentication,userAuthorization(["admin"]),userCtrl.sh
 app.post('/register/mechanic',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.create)
 app.get('/mechanics',userAuthentication,userAuthorization(['admin']),mechCtrl.list)
 app.get('/mechanic/:id',userAuthentication,userAuthorization(['mechanic']),mechCtrl.show)
-app.put('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.update)
+app.put('/mechanic/update/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.update)
 app.delete('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.delete)
 
 //service
