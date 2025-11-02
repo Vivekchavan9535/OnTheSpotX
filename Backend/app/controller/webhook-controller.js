@@ -3,7 +3,7 @@ import ServiceRequest from "../model/serviceRequest-model.js";
 import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
-const webhookUrl = "https://bin.webhookrelay.com/v1/webhooks/e60b47ee-f89e-4eaf-bb01-021be6f0f16a";
+const webhookUrl = "https://webhook.site/c39b6600-1b88-42e8-b34e-97fb23162f54";
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
