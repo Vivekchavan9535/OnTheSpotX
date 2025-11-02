@@ -17,11 +17,8 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		if (
 			from.includes("wati") ||
 			from.includes("broadcast") ||
-			from.includes("wa.me") ||
-			msg.includes("wati") ||
-			msg.includes("api") ||
-			msg.includes("template")
-		) {
+			from.includes("wa.me"))
+			 {
 			// Immediately return and don't log anything
 			return res.status(200).end();
 		}
