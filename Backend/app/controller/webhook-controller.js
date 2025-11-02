@@ -100,14 +100,14 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 					await sendWhatsApp(
 						mech.phone,
 						`🚨 New Service Request 🚨\n
-Vehicle: ${request.vehicleType}
-Issue: ${request.issueDescription}
-Location: ${request.userLocation?.address}
+Vehicle: ${request?.vehicleType}
+Issue: ${request?.issueDescription}
+Location: ${request?.userLocation?.address}
 Distance: ${distance}\n
 Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
 					);
 
-					console.log(`Sent to nearby mechanics : ${mech.firstName}`);
+					console.log(`Sent to nearby mechanics : ${mech?.name}`);
 				}
 
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
