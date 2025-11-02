@@ -52,8 +52,7 @@ serviceReqCtrl.create = async (req, res) => {
 				? `${mech.distanceMeters} m`
 				: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
-			sendWhatsApp(
-				Number(mech.phone),
+			sendWhatsApp(mech.phone,
 				`🚨 New Service Request 🚨\n
 Vehicle: ${body.vehicleType}
 Issue: ${body.issueDescription}

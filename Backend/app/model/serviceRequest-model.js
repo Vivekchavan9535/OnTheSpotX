@@ -39,8 +39,8 @@ const serviceRequestSchema = new mongoose.Schema({
 		},
 	],
 	mechanicId: {
-		type: Number,
-		default: 0,
+		type: mongoose.Schema.Types.ObjectId,
+		ref:"Mechanic"
 	},
 	lastNotifiedAt: {
 		type: Date,
