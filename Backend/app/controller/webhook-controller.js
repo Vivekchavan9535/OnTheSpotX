@@ -97,17 +97,16 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 						? `${mech.distanceMeters} m`
 						: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
-					await sendWhatsApp(
-  mech.phone,
-  `*🚨 NEW SERVICE REQUEST 🚨*\n\n
-*🛠 Vehicle Type:*\n${request?.vehicleType}\n\n
-*⚙️ Issue:*\n${request?.issueDescription}\n\n
-*📍 Location:*\n${request?.userLocation?.address}\n\n
-*📏 Distance:*\n${distance}\n\n
------------------------------\n\n
-*Please reply with:*\n👉 *1 — ACCEPT*\n👉 *2 — REJECT*`
-);
-
+					sendWhatsApp(mech.phone,
+  `🔧 *Hey Mechanic!* You have a new service request:\n\n` +
+  `🚗 *Vehicle:* ${req.body.vehicleType}\n` +
+  `⚠️ *Issue:* ${req.body.issueDescription}\n` +
+  `📍 *Location:* ${req.body.userLocation?.address}\n` +
+  `📏 *Distance:* ${distance}\n\n` +
+  `Reply with:\n` +
+  `✅ *1* — To Accept\n` +
+  `❌ *2* — To Reject`
+			 )
 					console.log(`Sent to nearby mechanics : ${mech?.name}`);
 				}
 
