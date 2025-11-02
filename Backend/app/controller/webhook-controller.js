@@ -10,14 +10,15 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 	try {
 		await axios.post(webhookUrl, { received: req.body });
 
+		const sender = req.body?.received?.senderData?.sender || req.body?.data?.from || "";
+		
+		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
+		const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "");
+
 		// Ignore all WATI-related messages
 		if (sender.includes("wati") || sender === "13516665129@c.us") {
 			return res.status(200).send("Ignored WATI system message");
 		}
-
-
-		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
-		const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "");
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
 
