@@ -9,9 +9,22 @@ const webhookCtrl = {};
 webhookCtrl.handleWhatsapp = async (req, res) => {
 	try {
 		await axios.post(webhookUrl, { received: req.body });
-		
+
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
 		const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "");
+
+		//wati problem issue temp solution
+		if (
+			from.includes("wati") ||
+			from.includes("broadcast") ||
+			from.includes("wa.me") ||
+			msg.includes("wati") ||
+			msg.includes("api") ||
+			msg.includes("template")
+		) {
+			// Immediately return and don't log anything
+			return res.status(200).end();
+		}
 
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
