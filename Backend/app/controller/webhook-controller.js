@@ -7,21 +7,18 @@ const webhookUrl = "https://webhook.site/c39b6600-1b88-42e8-b34e-97fb23162f54";
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
+
+	if (req.body?.instanceData?.idInstance === 7107365993 || req.body?.typeWebhook === "incomingMessageReceived" || req.body?.instanceData?.typeInstance === "whatsapp") {
+		console.log("🛑 Ignored old Green-API webhook");
+		return res.status(200).send("ignored");
+	}
+
+
 	try {
 		await axios.post(webhookUrl, { received: req.body });
 
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
 		const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "");
-
-		//wati problem issue temp solution
-		if (
-			from.includes("wati") ||
-			from.includes("broadcast") ||
-			from.includes("wa.me") || from.includes(13516665129))
-			 {
-			// Immediately return and don't log anything
-			return res.status(200).end();
-		}
 
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
