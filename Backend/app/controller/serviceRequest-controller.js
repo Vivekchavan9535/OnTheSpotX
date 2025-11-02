@@ -52,14 +52,16 @@ serviceReqCtrl.create = async (req, res) => {
 				? `${mech.distanceMeters} m`
 				: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
-			sendWhatsApp(mech.phone,
-				`🚨 New Service Request 🚨\n
-Vehicle: ${body.vehicleType}
-Issue: ${body.issueDescription}
-Location: ${body.userLocation.address}
-Distance: ${distance}\n
-Reply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`
-			);
+			 sendWhatsApp(mech.phone,
+  `🔧 *Hey Mechanic!* You have a new service request:\n\n` +
+  `🚗 *Vehicle:* ${req.body.vehicleType}\n` +
+  `⚠️ *Issue:* ${req.body.issueDescription}\n` +
+  `📍 *Location:* ${req.body.userLocation?.address}\n` +
+  `📏 *Distance:* ${distance}\n\n` +
+  `Reply with:\n` +
+  `✅ *1* — To Accept\n` +
+  `❌ *2* — To Reject`
+			 )
 
 			console.log(`Sent to nearby mechanics : ${mech.firstName}`);
 		})
