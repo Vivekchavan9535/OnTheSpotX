@@ -59,8 +59,8 @@ serviceReqCtrl.create = async (req, res) => {
   `📍 *Location:* ${req.body.userLocation?.address}\n` +
   `📏 *Distance:* ${distance}\n\n` +
   `Reply with:\n` +
-  `✅ *1* — To Accept\n` +
-  `❌ *2* — To Reject`
+  `✅ *1* — *Accept*\n` +
+  `❌ *2* — *Reject*`
 			 )
 
 			console.log(`Sent to nearby mechanics : ${mech.firstName}`);
