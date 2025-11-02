@@ -3,22 +3,16 @@ import ServiceRequest from "../model/serviceRequest-model.js";
 import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
-const webhookUrl = "https://webhook.site/890dba12-a3ac-442d-a154-2bbaafc89a9a";
+const webhookUrl = "https://bin.webhookrelay.com/v1/webhooks/e60b47ee-f89e-4eaf-bb01-021be6f0f16a";
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
 	try {
 		await axios.post(webhookUrl, { received: req.body });
-
-		const sender = req.body?.received?.senderData?.sender || req.body?.data?.from || "";
 		
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
 		const from = (req.body?.data?.from || "").slice(2).trim().replace("@c.us", "");
 
-		// Ignore all WATI-related messages
-		if (sender.includes("wati") || sender === "13516665129@c.us") {
-			return res.status(200).send("Ignored WATI system message");
-		}
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
 
