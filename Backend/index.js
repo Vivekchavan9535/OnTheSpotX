@@ -33,6 +33,7 @@ app.post('/login',userCtrl.login)
 
 //protected route
 app.get('/users',userAuthentication,userAuthorization(["admin"]),userCtrl.list) 
+app.get('/user/account',userAuthentication, userCtrl.account);
 app.delete('/users/:id',userAuthentication,userAuthorization(["admin"]),userCtrl.remove)
 app.get('/user/:id', userAuthentication,userAuthorization(["admin"]),userCtrl.show)
 

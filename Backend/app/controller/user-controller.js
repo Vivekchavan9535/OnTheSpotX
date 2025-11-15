@@ -69,6 +69,15 @@ userCtrl.login = async (req,res)=>{
 	}
 }
 
+userCtrl.account=async(req,res)=>{
+	try {
+		const user = await User.findById(req.userId)
+		res.json(user)
+	} catch (error) {
+		res.status(500).json({errors:error.message})
+	}
+}
+
 //list all users
 userCtrl.list = async (req, res) => {
   try {
