@@ -1,0 +1,113 @@
+import UserContext from '../context/userContext';
+import { useReducer,useEffect } from 'react';
+import axios from "../config/axios.js";
+import { useNavigate } from 'react-router-dom';
+
+
+const userReducer = (state, action) => {
+	switch (action.type) {
+		case "LOGIN": {
+			return { ...state, isLoggedIn: true, user: action.payload, serverErrors: "" }
+		}
+		case "LOGOUT": {
+			return { ...state, isLoggedIn: false, user: null, serverErrors: "" }
+		}
+		case "SERVER_ERRORS": {
+			return { ...state, serverErrors: action.payload }
+		}
+		default: {
+			return { ...state, serverErrors: "", loading: false }
+		}
+	}
+}
+
+export default function AuthProvider(props) {
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (localStorage.getItem("token")) {
+			const fetchUser = async () => {
+				try {
+					const userResponse = await axios.get('/user/account', { headers: { Authorization: localStorage.getItem("token") } })
+					userDispatch({ type: "LOGIN", payload: userResponse.data })
+				} catch (error) {
+					console.log(error.message);
+				}
+
+			}
+			fetchUser()
+		}
+	}, [])
+
+
+
+	const [userState, userDispatch] = useReducer(userReducer, {
+		user: null,
+		isLoggedIn: false,
+		serverErrors: ""
+	})
+
+	
+
+
+	const handleLogin = async (formData, { setEmail, setPassword }) => {
+		try {
+			const response = await axios.post('/login', formData);
+			localStorage.setItem("token", response.data.token);
+
+			const user = await axios.get('/user/account', { headers: { Authorization: localStorage.getItem('token') } })
+			console.log(user.data);
+
+			alert('Successfully LoggedIn')
+
+			userDispatch({ type: "LOGIN", payload: user.data});
+
+			setEmail("");
+			setPassword("");
+
+			// Role based login navigation
+			if (user.data.role === "admin") {
+				navigate("/dashboard");
+			} else if (user.data.role === "customer") {
+				navigate("/");
+			} else if (user.data.role === "mechanic") {
+				navigate("/mechanic");
+			} else {
+				navigate("/"); // default fallback
+			}
+
+		} catch (error) {
+			userDispatch({ type: "SERVER_ERRORS", payload: error.response.data});
+			console.log(error.response.data);
+		}
+	};
+
+	const registerUser = async (formData, { setEmail, setPassword }) => {
+		try {
+			const response = await axios.post('/register', formData);
+			setEmail("");
+			setPassword("");
+			alert('Registration Successful! Please login.');
+			console.log(response.data);
+			
+			navigate('/login');
+		} catch (error) {
+			userDispatch({ type: "SERVER_ERRORS", payload: error.response.data });
+			console.log(error.response.data);
+		}
+	};
+
+	const handleLogout = () => {
+		const userConfirm = window.confirm("Are you sure you want to logout?");
+		if	(!userConfirm) return;
+		localStorage.removeItem("token");
+		userDispatch({ type: "LOGOUT" });
+		navigate("/");
+	}
+
+	return (
+		<UserContext.Provider value={{ ...userState, handleLogin, handleLogout,registerUser}}>
+			{props.children}
+		</UserContext.Provider>
+	)
+}
