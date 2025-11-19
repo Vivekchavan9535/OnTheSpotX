@@ -8,7 +8,7 @@ export const fetchUsers = createAsyncThunk(
       const res = await axios.get(`/users?q=${encodeURIComponent(search)}`, {
         headers: { Authorization: localStorage.getItem("token") },
       });
-      return res.data;
+      return res.data.users;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching users");
     }
