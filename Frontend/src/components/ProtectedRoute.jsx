@@ -3,15 +3,18 @@ import { Navigate } from "react-router-dom";
 import UserContext from "../context/userContext";
 
 export default function ProtectedRoute({ children, allowedRoles }) {
-  const { user, isLoggedIn } = useContext(UserContext);
+  const { user } = useContext(UserContext);
+  const token = localStorage.getItem("token");
 
-  // If user not logged in → redirect to login
-  if (!isLoggedIn) return <Navigate to="/login" />;
-
-  // If role not allowed → redirect to home
-  if (!allowedRoles.includes(user?.role)) {
-    return <Navigate to="/" />;
+  // No token => not authenticated
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
 
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Access granted
   return children;
 }
