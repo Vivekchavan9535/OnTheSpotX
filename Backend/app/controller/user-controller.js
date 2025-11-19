@@ -1,118 +1,118 @@
-import mongoose from 'mongoose';
-import { userRegisterValidationSchema,userLoginValidationSchema } from '../validations/user-validation.js';
-import User from '../model/user-model.js'
-import bcrypt from "bcrypt" ;
-import jwt from "jsonwebtoken"
-import dotenv from 'dotenv'
+import mongoose from "mongoose";
+import { userRegisterValidationSchema, userLoginValidationSchema } from "../validations/user-validation.js";
+import User from "../model/user-model.js";
+import Mechanic from "../model/mechanic-model.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
+export const userCtrl = {};
 
-dotenv.config()
-
-export const userCtrl = {}
-
-
-//creates new user
 userCtrl.register = async (req, res) => {
-	const body = req.body;
+	const session = await mongoose.startSession();
+	session.startTransaction();
 
 	try {
-		const { error, value } = userRegisterValidationSchema.validate(body)
+		const { error, value } = userRegisterValidationSchema.validate(req.body);
+		if (error) return res.status(400).json({ error: error.message });
 
-		//checks  if the user email is already stored inn db
-		const userEmail = await User.findOne({ email: value.email })
+		// duplicates
+		if (await User.findOne({ email: value.email }).session(session))
+			return res.status(409).json({ error: "User email is already taken" });
+		if (await User.findOne({ phone: value.phone }).session(session))
+			return res.status(409).json({ error: "Phone number already exists" });
 
-		//id email is present in db it means the email is already taken
-		if (userEmail) {
-			return res.json("user email is already taken")
+		value.password = await bcrypt.hash(value.password, 10);
+
+		const created = await User.create([value], { session });
+		const user = created[0];
+
+		let mechanic = null;
+		if (user.role === "mechanic") {
+			const { location, specialization, experience } = req.body;
+			const mechCreated = await Mechanic.create([{
+				userId: user._id,
+				fullName: user.fullName,
+				email: user.email,
+				phone: user.phone,
+				location: location || { latitude: 0, longitude: 0, address: "" },
+				specialization: specialization || "both",
+				experience: experience || 0
+			}], { session });
+			mechanic = mechCreated[0];
 		}
 
-		//hashed password before saving in db
-		const hashedPassword =await bcrypt.hash(value.password,10)
-		value.password = hashedPassword
-		
-		//saving the registered data in database
-		const user = await User.create(value)
-		res.json(user)
-	} catch (error) {
-		res.status(500).json(error.message)
+		await session.commitTransaction();
+		return res.status(201).json({ user, mechanic });
 
+	} catch (err) {
+		await session.abortTransaction();
+		console.error("Registration Error:", err.message);
+		return res.status(500).json({ error: err.message });
+	} finally {
+		session.endSession();
 	}
 };
 
-
-userCtrl.login = async (req,res)=>{
-	const body = req.body;
+userCtrl.login = async (req, res) => {
 	try {
-		const {error,value}= userLoginValidationSchema.validate(body)
-		if(error){
-			res.status(401).json("Invalid email/password")
-		}
-		const user = await User.findOne({email:value.email})
+		const { error, value } = userLoginValidationSchema.validate(req.body);
+		if (error) return res.status(401).json({ error: "Invalid email/password" });
 
-		//if user is not found in db 
-		if(!user){
-			return res.status(404).json("user not found")
-		}
+		const user = await User.findOne({ email: value.email });
+		if (!user) return res.status(404).json({ error: "User not found" });
 
-		//if found we will compare hashedpassword with input password
-		const passwordMatched = await bcrypt.compare(value.password,user.password)
+		const ok = await bcrypt.compare(value.password, user.password);
+		if (!ok) return res.status(401).json({ error: "Invalid email/password" });
 
-		if(!passwordMatched){
-			return res.status(409).json("Invalid email/password")
-		}
-
-		const tokenData = {userId:user._id, role:user.role}
-		const token = jwt.sign(tokenData, process.env.SECRET_KEY)
-		res.json({"token":token})
-	} catch (error) {
-		res.status(500).json({errors:'Something went wrong'})
+		const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRET_KEY);
+		return res.json({ token });
+	} catch (err) {
+		console.error(err);
+		return res.status(500).json({ error: "Something went wrong" });
 	}
-}
+};
 
-userCtrl.account=async(req,res)=>{
+userCtrl.account = async (req, res) => {
 	try {
-		const user = await User.findById(req.userId)
-		res.json(user)
-	} catch (error) {
-		res.status(500).json({errors:error.message})
+		const user = await User.findById(req.userId);
+		return res.json(user);
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
 	}
-}
+};
 
-//list all users
 userCtrl.list = async (req, res) => {
-  try {
-    const users = await User.find()
-    res.json(users)
-  } catch (error) {
-    console.error("Error in /users route:", error.message)
-    res.status(500).json({ error: error.message })
-  }
-}
-
-//show single user
-userCtrl.show =  async(req,res)=>{
-	const id = req.params.id
-	
 	try {
-		const user = await User.findById(id)
-		
-		if(!user){
-			return res.status(404).json("User not found!")
+		const users = await User.find();
+		return res.json(users);
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
+	}
+};
+
+userCtrl.show = async (req, res) => {
+	try {
+		const user = await User.findById(req.params.id);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		// Fetch mechanic only if role = mechanic
+		let mechanic = null;
+		if (user.role === "mechanic") {
+			mechanic = await Mechanic.findOne({ userId: user._id });
 		}
-		res.json(user)
-	} catch (error) {
-		res.status(500).json(error.message)
+		return res.json({ user, mechanic });
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
 	}
-}
+};
 
-//remove the user
-userCtrl.remove = async(req,res)=>{
-	const id = req.params.id
+userCtrl.remove = async (req, res) => {
 	try {
-		const user = await User.findByIdAndDelete(id);
-		res.json(user)
-	} catch (error) {
-		res.status(500).json({error:"Something went wrong"})		
+		const user = await User.findByIdAndDelete(req.params.id);
+		return res.json(user);
+	} catch (err) {
+		return res.status(500).json({ error: "Something went wrong" });
 	}
-}
-
+};

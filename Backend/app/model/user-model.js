@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 
 const userSchema = new mongoose.Schema({
-	name: {
+	fullName: {
 		type: String,
 		required: true
 	},
@@ -25,9 +25,9 @@ const userSchema = new mongoose.Schema({
 		default: "customer",
 		required: true
 	},
-	vehicleType: {
-		type: String,
-	}
+	// vehicleType: {
+	// 	type: String,
+	// }
 
 }, { timestamps: true })
 
