@@ -12,16 +12,16 @@ export default function AdminDashboardStats() {
     const stats = useMemo(() => {
     let mechanics = 0, customers = 0, admins = 0;
 
-    data.forEach((u) => {
-      if (u.role === "mechanic") mechanics++;
-      if (u.role === "customer") customers++;
-      if (u.role === "admin") admins++;
+    data.forEach((user) => {
+      if (user.role === "mechanic") mechanics++;
+      if (user.role === "customer") customers++;
+      if (user.role === "admin") admins++;
     });
 
     return { total: data.length, mechanics, customers, admins };
   }, [data]);
 
-  // ---------------- SKELETON LOADING ----------------
+  // Skeleton loading 
   if (loading) {
     return (
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
