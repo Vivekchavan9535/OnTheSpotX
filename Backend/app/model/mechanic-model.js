@@ -6,13 +6,9 @@ const mechanicSchema = new mongoose.Schema({
 		ref:"User",
 		required:true,
 	},
-	firstName:{
+	fullName:{
 		type:String,
 		required:true
-	},
-	lastName:{
-		type:String,
-		required:true	
 	},
 	phone: {
 		type: String,
@@ -35,8 +31,8 @@ const mechanicSchema = new mongoose.Schema({
 		default: true
 	},
 	location: {
-		latitude: {type:Number, required:true},
-		longitude: {type:Number, required:true},
+		latitude: {type:Number},
+		longitude: {type:Number},
 		address: String
 	}
 },{timestamps:true})
