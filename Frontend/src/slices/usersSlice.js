@@ -3,14 +3,14 @@ import axios from "../config/axios.js";
 
 export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
-  async (q = "", { rejectWithValue }) => {
+  async (search = "", { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/users?q=${encodeURIComponent(q)}`, {
+      const res = await axios.get(`/users?q=${encodeURIComponent(search)}`, {
         headers: { Authorization: localStorage.getItem("token") },
       });
       return res.data;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || "Error fetching users");
     }
   }
 );
@@ -24,7 +24,7 @@ export const deleteUser = createAsyncThunk(
       });
       return res.data;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || "Error deleting user");
     }
   }
 );
@@ -38,7 +38,7 @@ export const fetchSingleUser = createAsyncThunk(
       });
       return res.data;
     } catch (err) {
-      return rejectWithValue(err);
+      return rejectWithValue(err.response?.data || "Error fetching user");
     }
   }
 );
@@ -56,23 +56,34 @@ const usersSlice = createSlice({
     builder
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.data = [];
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload || [];
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
+      })
+
+      .addCase(fetchSingleUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.currentUser = null;
+      })
+      .addCase(fetchSingleUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentUser = action.payload;
+      })
+      .addCase(fetchSingleUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
       .addCase(deleteUser.fulfilled, (state, action) => {
-        const id = action.payload._id;
-        state.data = state.data.filter((u) => u._id !== id);
-      })
-
-      .addCase(fetchSingleUser.fulfilled, (state, action) => {
-        state.currentUser = action.payload;
+        state.data = state.data.filter((u) => u._id !== action.payload._id);
       });
   },
 });

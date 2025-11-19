@@ -18,7 +18,7 @@ export default function ShowUser() {
 		
 	}, [dispatch, id]);
 
-	if (loading) return <div className="p-4">Loading user...</div>;
+	if (loading) return <div className="p-4 text-center pt-40">Loading user...</div>;
 	if (error) return <div className="p-4 text-red-600">Error: {error.message || String(error)}</div>;
 	if (!currentUser) return <div className="p-4">User not found.</div>;
 

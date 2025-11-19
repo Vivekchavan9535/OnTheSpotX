@@ -243,7 +243,7 @@ export default function Signup() {
 
 				{/* Show server-side error (e.g. email already taken) */}
 				{serverErrors && (
-					<div className="text-red-500 text-sm mt-2 break-words">{serverErrors.error || String(serverErrors)}</div>
+					<div className="text-red-500 text-sm mt-2 wrap-break-word">{serverErrors.error || String(serverErrors)}</div>
 				)}
 
 				<form className="space-y-4" onSubmit={formik.handleSubmit}>
