@@ -12,14 +12,13 @@ export const userCtrl = {};
 userCtrl.register = async (req, res) => {
 	const session = await mongoose.startSession();
 	session.startTransaction();
-
 	try {
 		const { error, value } = userRegisterValidationSchema.validate(req.body);
 		if (error) return res.status(400).json({ error: error.message });
 
-		// duplicates
 		if (await User.findOne({ email: value.email }).session(session))
 			return res.status(409).json({ error: "User email is already taken" });
+
 		if (await User.findOne({ phone: value.phone }).session(session))
 			return res.status(409).json({ error: "Phone number already exists" });
 
@@ -31,24 +30,27 @@ userCtrl.register = async (req, res) => {
 		let mechanic = null;
 		if (user.role === "mechanic") {
 			const { location, specialization, experience } = req.body;
-			const mechCreated = await Mechanic.create([{
-				userId: user._id,
-				fullName: user.fullName,
-				email: user.email,
-				phone: user.phone,
-				location: location || { latitude: 0, longitude: 0, address: "" },
-				specialization: specialization || "both",
-				experience: experience || 0
-			}], { session });
+			const mechCreated = await Mechanic.create(
+				[
+					{
+						userId: user._id,
+						fullName: user.fullName,
+						email: user.email,
+						phone: user.phone,
+						location: location || { latitude: 0, longitude: 0, address: "" },
+						specialization: specialization || "both",
+						experience: experience || 0,
+					},
+				],
+				{ session }
+			);
 			mechanic = mechCreated[0];
 		}
 
 		await session.commitTransaction();
 		return res.status(201).json({ user, mechanic });
-
 	} catch (err) {
 		await session.abortTransaction();
-		console.error("Registration Error:", err.message);
 		return res.status(500).json({ error: err.message });
 	} finally {
 		session.endSession();
@@ -68,8 +70,7 @@ userCtrl.login = async (req, res) => {
 
 		const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRET_KEY);
 		return res.json({ token });
-	} catch (err) {
-		console.error(err);
+	} catch {
 		return res.status(500).json({ error: "Something went wrong" });
 	}
 };
@@ -85,7 +86,11 @@ userCtrl.account = async (req, res) => {
 
 userCtrl.list = async (req, res) => {
 	try {
-		const users = await User.find();
+		const q = req.query.q || "";
+		const regex = new RegExp(q, "i");
+		const users = await User.find({
+			$or: [{ fullName: regex }, { email: regex }, { phone: regex }, { role: regex }],
+		});
 		return res.json(users);
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
@@ -97,11 +102,9 @@ userCtrl.show = async (req, res) => {
 		const user = await User.findById(req.params.id);
 		if (!user) return res.status(404).json({ error: "User not found" });
 
-		// Fetch mechanic only if role = mechanic
 		let mechanic = null;
-		if (user.role === "mechanic") {
-			mechanic = await Mechanic.findOne({ userId: user._id });
-		}
+		if (user.role === "mechanic") mechanic = await Mechanic.findOne({ userId: user._id });
+
 		return res.json({ user, mechanic });
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
@@ -112,7 +115,7 @@ userCtrl.remove = async (req, res) => {
 	try {
 		const user = await User.findByIdAndDelete(req.params.id);
 		return res.json(user);
-	} catch (err) {
+	} catch {
 		return res.status(500).json({ error: "Something went wrong" });
 	}
 };
