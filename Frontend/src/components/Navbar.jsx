@@ -57,7 +57,7 @@ export default function Navbar() {
 
               {/* Animated underline */}
               <span
-                className={`absolute left-0 -bottom-1 h-[2px] bg-[#273F4F] transition-all duration-300 ${
+                className={`absolute left-0 -bottom-1 h-0.5 bg-[#273F4F] transition-all duration-300 ${
                   location.pathname === nav.url ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
                 }`}
               />
@@ -74,7 +74,7 @@ export default function Navbar() {
                 Dashboard
               </Link>
               <span
-                className={`absolute left-0 -bottom-1 h-[2px] bg-[#273F4F] transition-all duration-300 ${
+                className={`absolute left-0 -bottom-1 h-0.5 bg-[#273F4F] transition-all duration-300 ${
                   location.pathname === "/dashboard" ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
                 }`}
               />
@@ -174,7 +174,7 @@ export default function Navbar() {
       </nav>
 
       {/* spacer so content isn't hidden under fixed navbar */}
-      <div className="h-[60px] sm:h-[80px]" />
+  <div className="h-[60px] sm:h-20" />
     </>
   );
 }

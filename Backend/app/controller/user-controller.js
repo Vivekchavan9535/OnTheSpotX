@@ -86,16 +86,43 @@ userCtrl.account = async (req, res) => {
 
 userCtrl.list = async (req, res) => {
 	try {
+		const page = Math.max(1, Number(req.query.page) || 1);
+		const limit = Math.max(1, Number(req.query.limit) || 10);
+		const skip = (page - 1) * limit;
+
 		const q = req.query.q || "";
 		const regex = new RegExp(q, "i");
-		const users = await User.find({
-			$or: [{ fullName: regex }, { email: regex }, { phone: regex }, { role: regex }],
+
+		const filter = {
+			$or: [
+				{ fullName: regex },
+				{ email: regex },
+				{ phone: regex },
+				{ role: regex }
+			]
+		};
+
+		// paginated + searched users
+		const users = await User.find(filter)
+			.skip(skip)
+			.limit(limit)
+			.sort({ createdAt: -1 });
+
+		// total matching records
+		const totalUsers = await User.countDocuments(filter);
+
+		return res.json({
+			users,
+			currentPage: page,
+			totalPages: Math.ceil(totalUsers / limit),
+			totalUsers
 		});
-		return res.json(users);
+
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
 	}
 };
+
 
 userCtrl.show = async (req, res) => {
 	try {
