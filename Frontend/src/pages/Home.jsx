@@ -64,7 +64,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="p-5 pt-30">
+      <section className="p-5">
         <div className="max-w-7xl mx-auto sm:grid sm:grid-cols-2 gap-8 items-center">
           {/* Left text section */}
           <div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left">

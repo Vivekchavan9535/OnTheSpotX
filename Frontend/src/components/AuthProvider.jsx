@@ -2,6 +2,8 @@ import UserContext from '../context/userContext';
 import { useReducer,useEffect } from 'react';
 import axios from "../config/axios.js";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchUsers } from '../slices/usersSlice.js';
 
 
 const userReducer = (state, action) => {
@@ -23,6 +25,7 @@ const userReducer = (state, action) => {
 
 export default function AuthProvider(props) {
 	const navigate = useNavigate()
+	const dispatch = useDispatch()
 
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
@@ -65,6 +68,7 @@ export default function AuthProvider(props) {
 			setEmail("");
 			setPassword("");
 
+
 			// Role based login navigation
 			if (user.data.role === "admin") {
 				navigate("/dashboard");
@@ -77,36 +81,38 @@ export default function AuthProvider(props) {
 			}
 
 		} catch (error) {
-			userDispatch({ type: "SERVER_ERRORS", payload: error.response.data});
-			console.log(error.response.data);
+			userDispatch({ type: "SERVER_ERRORS", payload: error?.response?.data?.error});
+			console.log(error.response.data.error);
+			alert(error.response.data.error)
 		}
 	};
 
-	const registerUser = async (formData, { setEmail, setPassword }) => {
+	const registerUser = async (formData, resetForm) => {
 		try {
 			const response = await axios.post('/register', formData);
-			setEmail("");
-			setPassword("");
 			alert('Registration Successful! Please login.');
 			console.log(response.data);
-			
+			resetForm();
 			navigate('/login');
 		} catch (error) {
-			userDispatch({ type: "SERVER_ERRORS", payload: error.response.data });
-			console.log(error.response.data);
+			// Prefer structured error object when available
+			const msg = error?.response?.data?.error;
+			alert(msg);
+			userDispatch({ type: "SERVER_ERRORS", payload: msg });
+			console.log(msg);
 		}
 	};
 
+
+
 	const handleLogout = () => {
-		const userConfirm = window.confirm("Are you sure you want to logout?");
-		if	(!userConfirm) return;
 		localStorage.removeItem("token");
 		userDispatch({ type: "LOGOUT" });
 		navigate("/");
 	}
 
 	return (
-		<UserContext.Provider value={{ ...userState, handleLogin, handleLogout,registerUser}}>
+		<UserContext.Provider value={{ ...userState, handleLogin, handleLogout,registerUser,userDispatch}}>
 			{props.children}
 		</UserContext.Provider>
 	)

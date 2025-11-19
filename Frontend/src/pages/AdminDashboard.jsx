@@ -1,6 +1,12 @@
-export default function AdminDashboard(){
-	return(
-		<h1 className="p-5">Dashboard</h1>
+import UsersTable from '../components/UsersTable'
+import AdminDashboardStats from '../components/AdminDashboardStats';
+
+export default function AdminDashboard() {
+	return (
+		<div>
+			<AdminDashboardStats />
+			<UsersTable/>
+		</div>
 	)
 }
 
