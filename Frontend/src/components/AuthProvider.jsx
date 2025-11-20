@@ -71,7 +71,7 @@ export default function AuthProvider(props) {
 
 			// Role based login navigation
 			if (user.data.role === "admin") {
-				navigate("/dashboard");
+				navigate("/admin-dashboard");
 			} else if (user.data.role === "customer") {
 				navigate("/");
 			} else if (user.data.role === "mechanic") {

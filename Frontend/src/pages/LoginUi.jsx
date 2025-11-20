@@ -16,10 +16,10 @@ export default function LoginUi() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		handleLogin({ email, password }, { setEmail, setPassword });
+		handleLogin({ email, password },{setEmail, setPassword});
 	};
 
-	// demo helpers: set credentials and call handleLogin immediately
+	// demo logins set credentials and call handleLogin immediately
 	const demo = (role) => {
 		const creds = {
 			admin: { email: "admin@test.com", password: "admin123" },
@@ -30,8 +30,7 @@ export default function LoginUi() {
 		if (!creds) return;
 		setEmail(creds.email);
 		setPassword(creds.password);
-		// small timeout so state updates before login
-		setTimeout(() => handleLogin({ email: creds.email, password: creds.password }, { setEmail, setPassword }), 100);
+		handleLogin({ email: creds.email, password: creds.password }, { setEmail, setPassword });
 	};
 
 	return (
@@ -41,9 +40,9 @@ export default function LoginUi() {
 
 				{/* Demo buttons */}
 				<div className="flex gap-2 mb-4">
-					<button type="button" onClick={() => demo("admin")} className="flex-1 py-2 bg-gray-100 rounded">Demo Admin</button>
-					<button type="button" onClick={() => demo("mechanic")} className="flex-1 py-2 bg-gray-100 rounded">Demo Mechanic</button>
-					<button type="button" onClick={() => demo("customer")} className="flex-1 py-2 bg-gray-100 rounded">Demo User</button>
+					<button type="button" onClick={() => demo("admin")} className="flex-1 py-2 bg-gray-100 rounded-lg">Demo Admin</button>
+					<button type="button" onClick={() => demo("mechanic")} className="flex-1 py-2 bg-gray-100 rounded-lg">Demo Mechanic</button>
+					<button type="button" onClick={() => demo("customer")} className="flex-1 py-2 bg-gray-100 rounded-lg">Demo User</button>
 				</div>
 
 				<form className="space-y-4" onSubmit={handleSubmit}>
