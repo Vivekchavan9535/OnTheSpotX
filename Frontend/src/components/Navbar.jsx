@@ -68,8 +68,8 @@ export default function Navbar() {
           {user?.role === "admin" && (
             <li className="relative group">
               <Link
-                to="/dashboard"
-                className={`transition-all duration-300 ${location.pathname === "/dashboard" ? "text-[#273F4F]" : "text-gray-700 hover:text-[#273F4F]"}`}
+                to="/admin-dashboard"
+                className={`transition-all duration-300 ${location.pathname === "/admin-dashboard" ? "text-[#273F4F]" : "text-gray-700 hover:text-[#273F4F]"}`}
               >
                 Dashboard
               </Link>
@@ -135,9 +135,9 @@ export default function Navbar() {
             {user?.role === "admin" && (
               <li
                 className="cursor-pointer list-none hover:text-[#273F4F] transition-all border-b border-gray-100 pb-2"
-                onClick={() => handleNavigate("/dashboard")}
+                onClick={() => handleNavigate("/admin/dashboard")}
               >
-                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/admin-dashboard">Dashboard</Link>
               </li>
             )}
 

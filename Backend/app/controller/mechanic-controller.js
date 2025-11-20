@@ -3,7 +3,7 @@ import Mechanic from '../model/mechanic-model.js';
 import User from '../model/user-model.js';
 import mechanicValidtionSchema from '../validations/mechanic-validation.js'
 
-export const mechCtrl = {}
+export const mechCtrl = {};
 
 
 mechCtrl.create = async (req, res) => {

@@ -161,12 +161,10 @@ export default function Signup() {
 		},
 	});
 
-	// Reverse geocode using Nominatim (OpenStreetMap)
+	// Reverse geocode using OpenStreetMap
 	const reverseGeocode = async (lat, lon) => {
 		try {
-			const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
-				lat
-			)}&lon=${encodeURIComponent(lon)}`;
+			const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
 			const res = await fetch(url, {
 				headers: { Accept: "application/json" },
 			});
@@ -224,7 +222,6 @@ export default function Signup() {
 			const t = setTimeout(() => getAndFillLocation(), 300);
 			return () => clearTimeout(t);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [formik.values.role]);
 
 	// helper to render location errors (Joi returns nested keys)
@@ -235,6 +232,8 @@ export default function Signup() {
 		// object with possible keys: address, latitude, longitude
 		return err.address || err.latitude || err.longitude || JSON.stringify(err);
 	};
+
+
 
 	return (
 		<section className="bg-gray-50 min-h-screen flex items-center justify-center px-6 py-8">

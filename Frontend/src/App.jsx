@@ -14,9 +14,12 @@ import { fetchUsers } from './slices/usersSlice';
 import { fetchMechanics } from "./slices/mechanicSlice.js"
 import { useDispatch } from 'react-redux';
 import ShowUser from './pages/ShowUser';
-import { useContext,useState } from 'react';
+import { useContext, useState } from 'react';
 import UserContext from './context/userContext';
 import SearchContext from './context/searchContext'
+import { useSelector } from "react-redux";
+import UserSlice from "./slices/usersSlice.js"
+import {fetchServices} from './slices/servicesSlice.js'
 
 
 
@@ -24,15 +27,25 @@ function App() {
 
 	const dispatch = useDispatch();
 	const { user, loading } = useContext(UserContext);
-    const [search, setSearch] = useState("");
+	const [search, setSearch] = useState("");
+	const { data } = useSelector((state) => {
+		return state.users
+	})
+
+	const token = localStorage.getItem("token")
 
 
 	useEffect(() => {
-		if (localStorage.getItem('token') && user?.role === 'admin') {
+		if (token && user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
 		}
+		dispatch(fetchServices())
 	}, [dispatch, user]);
+
+	
+
+
 
 	// central debounced search effect
 	useEffect(() => {
@@ -40,12 +53,14 @@ function App() {
 
 		// debounce 350ms
 		const t = setTimeout(() => {
-			// dispatch search — backend returns filtered list
+			// dispatch search backend returns filtered list
 			dispatch(fetchUsers(clean));
 		}, 350);
 
 		return () => clearTimeout(t);
 	}, [search, dispatch]);
+
+
 
 	return (
 		<>
@@ -53,7 +68,7 @@ function App() {
 				<Navbar />
 				<Routes>
 					<Route path="/" element={<Home />} />
-					<Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
+					<Route path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
 					<Route path="/services" element={<Services />} />
 					<Route path="/about" element={<About />} />
 					<Route path="/book-service" element={<BookService />} />
