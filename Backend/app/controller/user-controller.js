@@ -104,9 +104,9 @@ userCtrl.list = async (req, res) => {
 
 		// paginated + searched users
 		const users = await User.find(filter)
-			// .skip(skip)
-			// .limit(limit)
-			// .sort({ createdAt: -1 });
+		// .skip(skip)
+		// .limit(limit)
+		// .sort({ createdAt: -1 });
 
 		// total matching records
 		const totalUsers = await User.countDocuments(filter);
@@ -141,6 +141,13 @@ userCtrl.show = async (req, res) => {
 userCtrl.remove = async (req, res) => {
 	try {
 		const user = await User.findByIdAndDelete(req.params.id);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		// If the deleted user was a mechanic, remove their mechanic record too
+		if (user.role === "mechanic") {
+			await Mechanic.findOneAndDelete({ userId: user._id });
+		}
+
 		return res.json(user);
 	} catch {
 		return res.status(500).json({ error: "Something went wrong" });
