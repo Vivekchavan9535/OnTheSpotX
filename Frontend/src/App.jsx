@@ -19,7 +19,9 @@ import UserContext from './context/userContext';
 import SearchContext from './context/searchContext'
 import { useSelector } from "react-redux";
 import UserSlice from "./slices/usersSlice.js"
-import {fetchServices} from './slices/servicesSlice.js'
+import { fetchServices } from './slices/servicesSlice.js'
+import { ToastContainer ,Bounce}  from 'react-toastify';
+
 
 
 
@@ -43,8 +45,6 @@ function App() {
 		dispatch(fetchServices())
 	}, [dispatch, user]);
 
-	
-
 
 
 	// central debounced search effect
@@ -64,6 +64,8 @@ function App() {
 
 	return (
 		<>
+			<ToastContainer className="mt-20" position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark" transition={Bounce} />
+
 			<SearchContext.Provider value={{ search, setSearch }}>
 				<Navbar />
 				<Routes>

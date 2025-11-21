@@ -75,7 +75,7 @@ export default function Navbar() {
               </Link>
               <span
                 className={`absolute left-0 -bottom-1 h-0.5 bg-[#273F4F] transition-all duration-300 ${
-                  location.pathname === "/dashboard" ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
+                  location.pathname === "/admin-dashboard" ? "w-full opacity-100" : "w-0 opacity-0 group-hover:w-full group-hover:opacity-100"
                 }`}
               />
             </li>
@@ -135,7 +135,7 @@ export default function Navbar() {
             {user?.role === "admin" && (
               <li
                 className="cursor-pointer list-none hover:text-[#273F4F] transition-all border-b border-gray-100 pb-2"
-                onClick={() => handleNavigate("/admin/dashboard")}
+                onClick={() => handleNavigate("/admin-dashboard")}
               >
                 <Link to="/admin-dashboard">Dashboard</Link>
               </li>
