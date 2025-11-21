@@ -15,8 +15,6 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return <Navigate to="/" replace />;
   }
 
-  
-
   // Access granted
   return children;
 }

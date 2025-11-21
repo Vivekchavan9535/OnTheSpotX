@@ -5,6 +5,8 @@ import { useFormik } from "formik";
 import UserContext from "../context/userContext";
 import { useContext } from "react";
 import Joi from "joi";
+import axios from 'axios'
+import SignupValidationSchema from "../validations/signup-validation.js"
 
 export default function Signup() {
 	const navigate = useNavigate();
@@ -63,51 +65,11 @@ export default function Signup() {
 	}, [])
 
 
-	const schema = Joi.object({
-		fullName: Joi.string().min(2).max(100).required(),
-		phone: Joi.string().pattern(/^[6-9]\d{9}$/).required(),
-		email: Joi.string().email({ tlds: { allow: false } }).required(),
-		password: Joi.string().min(6).required(),
-		role: Joi.string().valid("customer", "mechanic", "admin").required(),
 
-		location: Joi.when("role", {
-			is: "mechanic",
-			then: Joi.object({
-				latitude: Joi.number().required(),
-				longitude: Joi.number().required(),
-				address: Joi.string().allow("").required(),
-			}).required(),
-			otherwise: Joi.optional().allow(null, ""),
-		}),
-
-		// experience: accept number or empty string, optional 
-		// experience: Joi.alternatives() .try( Joi.number().min(0).messages({ "number.base": "Experience must be a number", "number.min": "Experience cannot be negative", }), Joi.string().allow("") ) .optional(), make it minimal
-
-		// experience: accept number or empty string, optional
-		experience: Joi.number().min(0).allow("", null).optional(),
-
-
-		// 	specialization: Joi.any().when("role", {
-		// 		is: "mechanic",
-		// 		then: Joi.string()
-		// 			.valid("two-wheeler", "four-wheeler", "both")
-		// 			.required()
-		// 			.messages({ "any.only": "Select a valid specialization", "any.required": "Specialization is required" }),
-		// 		otherwise: Joi.optional().allow("", null),
-		// 	}),
-		// });
-
-		specialization: Joi.string().valid("two-wheeler", "four-wheeler", "both")
-			.when("role", {
-				is: "mechanic",
-				then: Joi.required(),
-				otherwise: Joi.allow(null, "")
-			}),
-	});
 
 	// map Joi error details -> Formik errors object
 	const joiValidate = (values) => {
-		const result = schema.validate(values, { abortEarly: false, convert: true });
+		const result = SignupValidationSchema.validate(values, { abortEarly: false, convert: true });
 		if (!result.error) return {};
 
 		const errors = {};
@@ -161,16 +123,21 @@ export default function Signup() {
 		},
 	});
 
-	// Reverse geocode using OpenStreetMap
+	//reverse geo coding
 	const reverseGeocode = async (lat, lon) => {
 		try {
-			const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-			const res = await fetch(url, {
+			const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(
+				lat
+			)}&lon=${encodeURIComponent(lon)}`;
+
+			const res = await axios.get(url, {
 				headers: { Accept: "application/json" },
 			});
-			if (!res.ok) throw new Error("Failed to reverse geocode");
-			const data = await res.json();
-			const address = data.display_name || (data.address && Object.values(data.address).join(", "));
+
+			const data = res.data;
+			const address =
+				data.display_name ||
+				(data.address && Object.values(data.address).join(", "));
 			return address || "";
 		} catch (e) {
 			console.error("reverseGeocode error:", e);
@@ -257,7 +224,6 @@ export default function Signup() {
 							value={formik.values.fullName}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							required
 						/>
 						{formik.touched.fullName && formik.errors.fullName && (
 							<div className="text-red-500 text-xs mt-1">{formik.errors.fullName}</div>
@@ -281,7 +247,6 @@ export default function Signup() {
 									formik.setFieldValue("phone", onlyNums);
 								}}
 								onBlur={formik.handleBlur}
-								required
 							/>
 						</div>
 						{formik.touched.phone && formik.errors.phone && (
@@ -300,7 +265,6 @@ export default function Signup() {
 							value={formik.values.email}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							required
 						/>
 						{formik.touched.email && formik.errors.email && (
 							<div className="text-red-500 text-xs mt-1">{formik.errors.email}</div>
@@ -318,7 +282,6 @@ export default function Signup() {
 							value={formik.values.password}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							required
 						/>
 						{formik.touched.password && formik.errors.password && (
 							<div className="text-red-500 text-xs mt-1">{formik.errors.password}</div>
@@ -333,7 +296,6 @@ export default function Signup() {
 							value={formik.values.role}
 							onChange={formik.handleChange}
 							className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
-							required
 						>
 							<option value="customer">Customer</option>
 							<option value="mechanic">Mechanic</option>
@@ -360,7 +322,6 @@ export default function Signup() {
 											})
 										}
 										onBlur={formik.handleBlur}
-										required
 									/>
 									<button
 										type="button"
@@ -393,7 +354,6 @@ export default function Signup() {
 									value={formik.values.experience}
 									onChange={formik.handleChange}
 									onBlur={formik.handleBlur}
-									required
 								/>
 								{formik.touched.experience && formik.errors.experience && (
 									<div className="text-red-500 text-xs mt-1">{formik.errors.experience}</div>
@@ -409,7 +369,6 @@ export default function Signup() {
 									value={formik.values.specialization}
 									onChange={formik.handleChange}
 									onBlur={formik.handleBlur}
-									required
 								>
 									<option value="">-- Select --</option>
 									<option value="two-wheeler">Two Wheeler</option>

@@ -1,9 +1,27 @@
 import UserContext from '../context/userContext';
-import { useReducer,useEffect } from 'react';
+import { useReducer, useEffect } from 'react';
 import axios from "../config/axios.js";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { fetchUsers } from '../slices/usersSlice.js';
+import { toast } from "react-toastify";
+
+
+
+const toastErr = (msg) =>
+	toast.error(msg, {
+		position: "top-center",
+		autoClose: 1000,
+		theme: "dark",
+	});
+
+const toastSuccess = (msg) =>
+	toast.success(msg, {
+		position: "top-center",
+		autoClose: 1000,
+		theme: "dark",
+	});
+
 
 
 const userReducer = (state, action) => {
@@ -50,7 +68,7 @@ export default function AuthProvider(props) {
 		serverErrors: ""
 	})
 
-	
+
 
 
 	const handleLogin = async (formData, { setEmail, setPassword }) => {
@@ -61,29 +79,32 @@ export default function AuthProvider(props) {
 			const user = await axios.get('/user/account', { headers: { Authorization: localStorage.getItem('token') } })
 			console.log(user.data);
 
-			alert('Successfully LoggedIn')
+			toastSuccess("Successfully logged-in")
 
-			userDispatch({ type: "LOGIN", payload: user.data});
 
+
+			userDispatch({ type: "LOGIN", payload: user.data });
 			setEmail("");
 			setPassword("");
 
 
 			// Role based login navigation
 			if (user.data.role === "admin") {
-				navigate("/admin-dashboard");
+				navigate("/admin-dashboard" , { replace: true });
 			} else if (user.data.role === "customer") {
 				navigate("/");
 			} else if (user.data.role === "mechanic") {
-				navigate("/mechanic");
+				navigate("/mechanic",  { replace: true });
 			} else {
-				navigate("/"); // default fallback
+				navigate("/" , { replace: true }); // default fallback
 			}
 
+
+
 		} catch (error) {
-			userDispatch({ type: "SERVER_ERRORS", payload: error?.response?.data?.error});
+			userDispatch({ type: "SERVER_ERRORS", payload: error?.response?.data?.error });
 			console.log(error.response.data.error);
-			alert(error.response.data.error)
+			toastErr(error.response.data.error)
 		}
 	};
 
@@ -112,7 +133,7 @@ export default function AuthProvider(props) {
 	}
 
 	return (
-		<UserContext.Provider value={{ ...userState, handleLogin, handleLogout,registerUser,userDispatch}}>
+		<UserContext.Provider value={{ ...userState, handleLogin, handleLogout, registerUser, userDispatch }}>
 			{props.children}
 		</UserContext.Provider>
 	)

@@ -1,5 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../config/axios.js";
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+
+
+const toastErr = (msg) =>
+	toast.error(msg, {
+		position: "top-center",
+		autoClose: 3000,
+		theme: "dark",
+	});
+
+const toastSuccess = (msg) =>
+	toast.success(msg, {
+		position: "top-center",
+		autoClose: 1000,
+		theme: "dark",
+	});
+
 
 export const fetchServices = createAsyncThunk(
 	"services/fetchServices",
@@ -14,43 +31,55 @@ export const fetchServices = createAsyncThunk(
 	}
 );
 
-
-
-
 export const addService = createAsyncThunk(
 	"services/addService",
-	async ({formData,resetForm}, { rejectWithValue }) => {
+	async ({ formData, resetForm }, { rejectWithValue }) => {
 		try {
 			const res = await axios.post("/service", formData, {
 				headers: { Authorization: localStorage.getItem("token") },
 			});
-			console.log(res);
+			toastSuccess("Service is created successfully")
 			resetForm()
 			return res.data;
 		} catch (err) {
-			console.log(err.response.data);
-			alert(err.response.data.error)
+			console.log(err.response.data.error);
+			toastErr(err.response.data.error)
 			return rejectWithValue(err.response?.data.error);
 		}
 	}
 );
 
+export const updateService = createAsyncThunk('service/updateService', async ({ editId, formData, resetForm }, { rejectWithValue }) => {
+	try {
+		const res = await axios.put(`/service/${editId}`, formData, {
+			headers: {
+				Authorization: localStorage.getItem('token')
+			}
+		});
+		toastSuccess("Service updated successfully!")
+		return res.data
+	} catch (error) {
+		console.log(error.response.data.error);
+		toastErr(error.response.data.error)
+		return rejectWithValue(error.response?.data.error)
+	}
+})
 
 
-
-// export const deleteUser = createAsyncThunk(
-//   "users/deleteUser",
-//   async (userId, { rejectWithValue }) => {
-//     try {
-//       const res = await axios.delete(`/users/${userId}`, {
-//         headers: { Authorization: localStorage.getItem("token") },
-//       });
-//       return res.data;
-//     } catch (err) {
-//       return rejectWithValue(err.response?.data || "Error deleting user");
-//     }
-//   }
-// );
+export const deleteService = createAsyncThunk(
+	"service/deleteService",
+	async (serviceId, { rejectWithValue }) => {
+		try {
+			const res = await axios.delete(`/service/${serviceId}`, {
+				headers: { Authorization: localStorage.getItem("token") },
+			});
+			toastSuccess("Successfully Deleted")
+			return res.data;
+		} catch (err) {
+			return rejectWithValue(err.response?.data || "Error deleting user");
+		}
+	}
+);
 
 
 
@@ -59,10 +88,19 @@ const servicesSlice = createSlice({
 	initialState: {
 		data: [],
 		currentUser: null,
+		editId: null,
 		loading: false,
 		serverError: null
 	},
-	reducers: {},
+	reducers: {
+		setEditId: (state, action) => {
+			state.editId = action.payload;
+		},
+		clearEditId: (state) => {
+			state.editId = null;
+			state.serverError = null;
+		},
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchServices.pending, (state) => {
@@ -80,7 +118,7 @@ const servicesSlice = createSlice({
 			})
 
 			//Add service
-			.addCase(addService.pending, (state, action) => {
+			.addCase(addService.pending, (state) => {
 				state.loading = true;
 				state.serverError = null;
 			})
@@ -93,25 +131,33 @@ const servicesSlice = createSlice({
 				state.serverError = action.payload;
 			})
 
+			//update service
+			.addCase(updateService.pending, (state) => {
+				state.loading = true;
+				state.serverError = null;
+			})
+			.addCase(updateService.fulfilled, (state, action) => {
+				state.loading = false;
+				const idx = state.data.findIndex((ele) => ele._id === action.payload._id)
+				state.data[idx] = action.payload
+				state.editId = null;
+			})
+			.addCase(updateService.rejected, (state, action) => {
+				state.loading = false;
+				state.serverError = action.payload;
+			})
 
-		//   .addCase(fetchSingleUser.pending, (state) => {
-		//     state.loading = true;
-		//     state.error = null;
-		//     state.currentUser = null;
-		//   })
-		//   .addCase(fetchSingleUser.fulfilled, (state, action) => {
-		//     state.loading = false;
-		//     state.currentUser = action.payload;
-		//   })
-		//   .addCase(fetchSingleUser.rejected, (state, action) => {
-		//     state.loading = false;
-		//     state.error = action.payload;
-		//   })
-
-		//   .addCase(deleteUser.fulfilled, (state, action) => {
-		//     state.data = state.data.filter((u) => u._id !== action.payload._id);
-		//   });
+			.addCase(deleteService.fulfilled, (state, action) => {
+				const idx = state.data.findIndex((s) => s._id == action.payload._id);
+				state.data.splice(idx, 1)
+			})
+			.addCase(deleteService.rejected, (state, action) => {
+				state.loading = false;
+				state.serverError = action.payload;
+			})
 	},
 });
+
+export const { setEditId, clearEditId } = servicesSlice.actions;
 
 export default servicesSlice.reducer;
