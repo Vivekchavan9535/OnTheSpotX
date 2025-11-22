@@ -1,5 +1,6 @@
 // src/components/Navbar.jsx
 import { IoMenu, IoClose } from "react-icons/io5";
+import navLogo from '../assets/navLogo.png'
 import { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import UserContext from "../context/userContext";
@@ -31,13 +32,13 @@ export default function Navbar() {
 	return (
 		<>
 			{/* Fixed Navbar */}
-			<nav className="fixed top-3 left-8 backdrop-blur-2xl bg-white/50 rounded-4xl w-[97%] z-20 bg-gray-50 shadow-md flex justify-between sm:px-5 sm:py-2 px-3 items-center">
+			<nav className="fixed top-2 left-[5px] sm:top-3 sm:left-8 backdrop-blur-2xl bg-white/50 rounded-4xl w-[97%] z-20 bg-gray-50 shadow-md flex justify-between sm:px-5 sm:py-2 px-3 items-center">
 				{/* Logo */}
 				<Link to="/" onClick={() => setHamburger(false)}>
 					<div className="flex justify-center items-center gap-4">
 						<img
-							className="h-[50px]"
-							src="https://static.vecteezy.com/system/resources/previews/011/419/223/non_2x/mechanic-on-duty-logo-template-vector.jpg"
+							className="h-[50px] mix-blend-plus-darker"
+							src={navLogo}
 							alt="Logo"
 						/>
 						<h1 className="font-bold cursor-pointer text-[20px] text-black">
