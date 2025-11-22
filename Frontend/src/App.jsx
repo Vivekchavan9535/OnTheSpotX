@@ -20,7 +20,15 @@ import SearchContext from './context/searchContext'
 import { useSelector } from "react-redux";
 import UserSlice from "./slices/usersSlice.js"
 import { fetchServices } from './slices/servicesSlice.js'
-import { ToastContainer ,Bounce}  from 'react-toastify';
+import { ToastContainer, Bounce } from 'react-toastify';
+import Footer from './components/Footer'
+import logoImg from './assets/logo.png'
+import MechanicProfile from "./pages/MechanicProfile"
+import { fetchMechProfile } from './slices/mechanicSlice.js'
+import ServiceRequest from './pages/ServiceRequest'
+
+
+
 
 
 
@@ -41,9 +49,11 @@ function App() {
 		if (token && user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
+		} else if (token && user?.role == "mechanic" && user?._id) {
+			dispatch(fetchMechProfile(user._id))
 		}
 		dispatch(fetchServices())
-	}, [dispatch, user]);
+	}, [dispatch, user, token]);
 
 
 
@@ -77,8 +87,12 @@ function App() {
 					<Route path="/register" element={<Signup />} />
 					<Route path="/login" element={<LoginUi />} />
 					<Route path="/user/:id" element={<ShowUser />} />
+					<Route path="/mechanic-profile" element={<MechanicProfile />} />
+					<Route path="/service-request/:serviceId" element={<ServiceRequest />} />
+
 				</Routes>
 			</SearchContext.Provider>
+			<Footer logoImg={logoImg} />
 		</>
 	)
 }

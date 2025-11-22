@@ -13,12 +13,33 @@ import { addService, fetchServices, deleteService, setEditId } from "../slices/s
 import { useDispatch, useSelector } from "react-redux";
 import serviceValidationSchema from "../validations/service-validation.js"; // Joi schema
 import EditServiceModal from "../components/EditServiceModal"; // New Import
+import {useNavigate} from 'react-router-dom'
+
+import { toast } from "react-toastify";
+
+
+
+const toastErr = (msg) =>
+	toast.error(msg, {
+		position: "top-center",
+		autoClose: 1000,
+		theme: "dark",
+	});
+
+const toastSuccess = (msg) =>
+	toast.success(msg, {
+		position: "top-center",
+		autoClose: 1000,
+		theme: "dark",
+	});
 
 
 export default function Service() {
 	const { user } = useContext(UserContext);
 	const dispatch = useDispatch();
 	const { data, serverError, editId } = useSelector((state) => state.services);
+
+	const navigate = useNavigate()
 
 	// State to manage the Edit Modal visibility
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -61,6 +82,17 @@ export default function Service() {
 	const handleEdit = (serviceId) => {
 		dispatch(setEditId(serviceId));
 	};
+
+	const BookService = (serviceId) => {
+		if(localStorage.getItem('token')){
+			navigate(`/service-request/${serviceId}`)
+		}else{
+			toastErr("Login to Book Service")
+			navigate('/login')
+		}
+
+	}
+
 
 	return (
 		<section className="py-6 px-5">
@@ -141,6 +173,7 @@ export default function Service() {
 							role={user?.role}
 							onDelete={() => dispatch(deleteService(service._id))}
 							onEdit={() => handleEdit(service._id)} // Pass the new handler
+							onBook={() => BookService(service._id)}
 						/>
 					))}
 				</div>

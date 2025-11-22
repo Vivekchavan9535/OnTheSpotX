@@ -49,7 +49,7 @@ export default function ServiceCardUi({
 								actionLabel="Delete"
 								onConfirm={onDelete}
 								trigger={
-									<button className="p-2 rounded-md bg-slate-100 hover:bg-slate-200 transition"  title="Delete">
+									<button className="p-2 rounded-md bg-slate-100 hover:bg-slate-200 transition" title="Delete">
 										<FaTrash size={16} className="text-red-500" />
 									</button>
 								}
@@ -73,9 +73,11 @@ export default function ServiceCardUi({
 						<p className="text-base font-semibold">₹{basePrice}</p>
 					</div>
 
-					<Button size="sm" onClick={onBook}>
+					{role == "mechanic" ? <Button className="hidden" size="sm" onClick={onBook}>
 						Book Now
-					</Button>
+					</Button> : <Button size="sm" onClick={onBook}>
+						Book Now
+					</Button>}
 				</div>
 
 				<Separator className="my-3" />

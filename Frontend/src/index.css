@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+.tricolor-text {
+  background: linear-gradient(
+    to right,
+    #FF9933, /* saffron */
+    #FFFFFF, /* white */
+    #138808  /* green */
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: tricolorMove 3s linear infinite;
+}
+
+@keyframes tricolorMove {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
