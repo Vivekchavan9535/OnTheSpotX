@@ -36,8 +36,8 @@ export default function LoginUi() {
 	};
 
 	return (
-		<section className="bg-gray-50 min-h-screen flex items-center justify-center px-6 py-8">
-			<div className="w-full max-w-md bg-white rounded-xl shadow p-6">
+		<section className="flex items-center justify-center px-6">
+			<div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
 				<h1 className="text-2xl font-bold text-center mb-4">Login</h1>
 
 				{/* Demo buttons */}
