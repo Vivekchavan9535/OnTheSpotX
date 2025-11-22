@@ -41,7 +41,7 @@ app.get('/user/:id', userAuthentication,userAuthorization(["admin"]),userCtrl.sh
 app.post('/register/mechanic',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.create)
 app.get('/mechanics',userAuthentication,userAuthorization(['admin']),mechCtrl.list)
 app.get('/mechanic/:id',userAuthentication,userAuthorization(['admin']),mechCtrl.show)
-app.get('/me/:id',userAuthentication,userAuthorization(['mechanic']),mechCtrl.me)
+app.get('/mechanic-profile/:id',userAuthentication,userAuthorization(['mechanic']),mechCtrl.mechProfile)
 
 app.put('/mechanic/update/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.update)
 app.delete('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),mechCtrl.delete)

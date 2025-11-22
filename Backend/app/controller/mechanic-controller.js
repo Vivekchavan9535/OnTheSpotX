@@ -53,39 +53,47 @@ mechCtrl.show = async (req, res) => {
 	}
 }
 
-mechCtrl.me = async (req, res) => {
+// Show mechanic profile by user ID
+mechCtrl.mechProfile = async (req, res) => {
 	const id = req.params.id;
 	try {
-		const mechanic = await Mechanic.findById(id)
-		if (!mechanic) {
-			return res.status(404).json("mechanic not found")
+		const user = await User.findById(id);
+
+		if (!user) {
+			return res.status(404).json({ error: "User not found" });
 		}
-		res.status(200).json(mechanic)
+
+		const mechanic = await Mechanic.findOne({ userId: user._id });
+
+		if (!mechanic) {
+			return res.status(404).json({ error: "Mechanic not found" });
+		}
+		res.status(200).json(mechanic);
 	} catch (error) {
-		res.status(500).json(erorr.message)
+		res.status(500).json({ error: error.message });
 	}
-}
+};
+
 
 mechCtrl.update = async (req, res) => {
 	const id = req.params.id;
 	const body = req.body;
-	const { error, value } = mechanicValidtionSchema.validate(body)
-	if (error) {
-		return res.status(400).json(error.details)
+	const { err, value } = mechanicValidtionSchema.validate(body)
+	if (err) {
+		return res.status(400).json({err:error.details})
 	}
 	try {
 		const mechanic = await Mechanic.findOneAndUpdate({ _id: id, userId: req.userId }, value, { new: true })
-		console.log(mechanic);
 
 		if (!mechanic) {
-			return res.status(404).json("Mechanic not found")
+			return res.status(404).json({error:"Mechanic not found"})
 		}
 		res.status(200).json(mechanic)
 
-	} catch (error) {
-		res.status(500).json(error.message)
+	} catch (err) {
+		res.status(500).json({erorr:err.message})
 	}
-}
+} 
 
 
 mechCtrl.delete = async (req, res) => {
