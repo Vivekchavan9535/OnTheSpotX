@@ -50,27 +50,35 @@ export default function AuthProvider({ children }) {
 		}
 	}, []);
 
-	const handleLogin = async (formData, { resetForm }) => {
+	const handleLogin = async (formData, { setEmail, setPassword }) => {
 		try {
 			const res = await axios.post("/login", formData);
 			localStorage.setItem("token", res.data.token);
+
+			console.log(res);
+
 
 			const userRes = await axios.get("/user/account", {
 				headers: { Authorization: localStorage.getItem("token") },
 			});
 
-			toastSuccess("Successfully logged in");
+			console.log(userRes);
+
+
 			userDispatch({ type: "LOGIN", payload: userRes.data });
-
-			resetForm();
-
+			toastSuccess("Successfully logged in");
 			// Role-based navigation
 			const role = userRes.data.role;
-			if (role === "admin") navigate("/admin-dashboard", { replace: true });
-			else if (role === "customer") navigate("/", { replace: true });
-			else if (role === "mechanic") navigate("/mechanic-profile", { replace: true });
-			else navigate("/", { replace: true });
+			if (role === "admin") navigate("/admin-dashboard");
+			else if (role === "customer") navigate("/");
+			else if (role === "mechanic") navigate("/mechanic-profile");
+			else navigate("/");
+			setEmail = "";
+			setPassword = "";
+
 		} catch (err) {
+			console.log(err);
+
 			const msg = err?.response?.data?.error || "Login failed";
 			userDispatch({ type: "SERVER_ERRORS", payload: msg });
 			toastErr(msg);
@@ -81,8 +89,8 @@ export default function AuthProvider({ children }) {
 		try {
 			await axios.post("/register", formData);
 			toastSuccess("Registration successful! Please login.");
-			resetForm();
 			navigate("/login");
+			resetForm();
 		} catch (err) {
 			const msg = err?.response?.data?.error || "Registration failed";
 			userDispatch({ type: "SERVER_ERRORS", payload: msg });

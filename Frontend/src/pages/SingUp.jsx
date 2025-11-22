@@ -94,6 +94,7 @@ export default function Signup() {
 		},
 		validate: joiValidate,
 		onSubmit: async (values, { resetForm }) => {
+			
 			try {
 				// normalize phone to +91... (ensure 10 digits)
 				const onlyNums = String(values.phone || "").replace(/\D/g, "").slice(0, 10);
@@ -114,9 +115,8 @@ export default function Signup() {
 					};
 					args.experience = Number(values.experience);
 					args.specialization = values.specialization;
-				}
-
-				await registerUser(args, resetForm);
+				}				
+				await registerUser(args,resetForm);
 			} catch (err) {
 				console.error("submit error:", err);
 			}
