@@ -23,6 +23,12 @@ const serviceRequestSchema = new mongoose.Schema({
 		longitude: Number,
 		address: String,
 	},
+	basePrice:{
+		type:Number
+	},
+	distanceMeters:{
+		type:Number
+	},
 	status: {
 		type: String,
 		enum: ["waiting", "accepted", "rejected", "cancelled", "completed", "no-mechanic-found"],

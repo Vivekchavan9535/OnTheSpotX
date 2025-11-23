@@ -49,7 +49,7 @@ app.delete('/mechanic/:id',userAuthentication,userAuthorization(["mechanic"]),me
 //service
 app.post('/service',userAuthentication,userAuthorization(['admin']),serviceCtrl.create)
 app.get('/services',serviceCtrl.list)
-app.get('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.show)
+app.get('/service/:id',userAuthentication,serviceCtrl.show)
 app.put('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.update)
 app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),serviceCtrl.remove)
 
