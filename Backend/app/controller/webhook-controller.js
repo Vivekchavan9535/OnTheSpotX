@@ -8,10 +8,10 @@ const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
 
-	if (req.body?.instanceData?.idInstance === 7107365993 || req.body?.typeWebhook === "incomingMessageReceived" || req.body?.instanceData?.typeInstance === "whatsapp") {
-		console.log("🛑 Ignored old Green-API webhook");
-		return res.status(200).send("ignored");
-	}
+	// if (req.body?.instanceData?.idInstance === 7107365993 || req.body?.typeWebhook === "incomingMessageReceived" || req.body?.instanceData?.typeInstance === "whatsapp") {
+	// 	console.log("🛑 Ignored old Green-API webhook");
+	// 	return res.status(200).send("ignored");
+	// }
 
 
 	try {
