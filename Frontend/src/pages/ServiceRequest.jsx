@@ -1,4 +1,5 @@
-import { useState, useContext, useEffect } from "react";
+// src/pages/ServiceRequest.jsx
+import { useState, useContext, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useFormik } from "formik"; // Import useFormik
 import axios from "../config/axios.js"; // Your configured Axios instance
@@ -18,6 +19,10 @@ export default function ServiceRequest() {
 	const [serviceLoading, setServiceLoading] = useState(true);
 	const [serviceError, setServiceError] = useState(null);
 
+	const [timeLeft, setTimeLeft] = useState(300); // 300 sec = 5 min
+	const [requestId, setRequestId] = useState(null);
+	
+	const intervalRef = useRef(null);
 
 	const validate = (values) => {
 		const errors = {};
@@ -40,7 +45,6 @@ export default function ServiceRequest() {
 		return errors;
 	};
 
-
 	const formik = useFormik({
 		initialValues: {
 			userId: null,
@@ -57,6 +61,7 @@ export default function ServiceRequest() {
 			basePrice: 0,
 		},
 		validate,
+		validateOnMount: true,
 		onSubmit: async (values, { resetForm }) => {
 			if (!values.issueDescription) {
 				alert("Issue description is required!");
@@ -65,20 +70,45 @@ export default function ServiceRequest() {
 			console.log("Service Request Submitted:", values);
 
 			try {
-				const token = localStorage.getItem('token');
-				const res = await axios.post('/service-request', values, { headers: { Authorization: token } });
-				alert("Service request successfully submitted!");
-				console.log("Submission response:", res.data);
-				resetForm()
+				const token = localStorage.getItem("token");
+				const res = await axios.post("/service-request", values, {
+					headers: { Authorization: token },
+				});
 
+				console.log("Submission response:", res.data);
+
+				if (res.data.requestId) {
+					setRequestId(res.data.requestId);
+					setTimeLeft(300);
+
+					if (intervalRef.current) {
+						clearInterval(intervalRef.current);
+						intervalRef.current = null;
+					}
+
+					// start countdown
+					intervalRef.current = setInterval(() => {
+						setTimeLeft((prev) => {
+							if (prev <= 1) {
+								clearInterval(intervalRef.current);
+								intervalRef.current = null;
+								setRequestId(null);
+								return 0;
+							}
+							return prev - 1;
+						});
+					}, 1000);
+				}
+
+				alert("Service request successfully submitted!");
+				resetForm();
 			} catch (err) {
-				const errorMsg = err.response
-				alert(`Failed to submit request: ${errorMsg}`);
+				const errorMsg = err?.response ?? err;
+				alert(`Failed to submit request: ${JSON.stringify(errorMsg)}`);
 				console.error("Submission Error:", errorMsg, err);
 			}
 		},
 	});
-
 
 	// Fetch Service Details and set Base Price
 	useEffect(() => {
@@ -92,21 +122,20 @@ export default function ServiceRequest() {
 			setServiceLoading(true);
 			setServiceError(null);
 			try {
-				const token = localStorage.getItem('token');
+				const token = localStorage.getItem("token");
 				const res = await axios.get(`/service/${serviceId}`, {
 					headers: {
-						Authorization: token
-					}
+						Authorization: token,
+					},
 				});
 
 				const fetchedDetails = res.data;
 				setServiceDetails(fetchedDetails);
 
-				formik.setFieldValue('totalCost', fetchedDetails.basePrice || 0);
-				formik.setFieldValue('serviceId', serviceId);
-
+				formik.setFieldValue("totalCost", fetchedDetails.basePrice || 0);
+				formik.setFieldValue("serviceId", serviceId);
 			} catch (err) {
-				const errorMsg = err.response.data
+				const errorMsg = err?.response?.data || String(err);
 				setServiceError(errorMsg);
 			} finally {
 				setServiceLoading(false);
@@ -118,8 +147,9 @@ export default function ServiceRequest() {
 
 	useEffect(() => {
 		if (user && !loading) {
-			formik.setFieldValue('userId', user._id);
+			formik.setFieldValue("userId", user._id);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user, loading]);
 
 	// Geolocation
@@ -144,14 +174,13 @@ export default function ServiceRequest() {
 					const data = await res.json();
 					const address = data.display_name;
 
-					// Use Formik setters to update nested state fields
-					formik.setFieldValue('userLocation.latitude', String(latitude));
-					formik.setFieldValue('userLocation.longitude', String(longitude));
-					formik.setFieldValue('userLocation.address', address);
+					formik.setFieldValue("userLocation.latitude", String(latitude));
+					formik.setFieldValue("userLocation.longitude", String(longitude));
+					formik.setFieldValue("userLocation.address", address);
 
 					// Clear address error if successful
-					if (formik.errors['userLocation.address']) {
-						formik.setFieldError('userLocation.address', undefined);
+					if (formik.errors["userLocation.address"]) {
+						formik.setFieldError("userLocation.address", undefined);
 					}
 				} catch (err) {
 					console.error("Reverse geocoding failed", err);
@@ -172,156 +201,168 @@ export default function ServiceRequest() {
 		);
 	};
 
+	useEffect(() => {
+		// cleanup interval on unmount
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+				intervalRef.current = null;
+			}
+		};
+	}, []);
+
 	if (loading || serviceLoading) {
 		return <p className="text-center p-8">Loading user and service details...</p>;
 	}
 
 	if (serviceError) {
-		return <p className="text-center p-8 text-red-600 font-semibold">Error: {serviceError}</p>;
+		return (
+			<p className="text-center p-8 text-red-600 font-semibold">Error: {serviceError}</p>
+		);
 	}
-
 
 	return (
 		<div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
-			<h1 className="text-2xl font-bold mb-4 text-center">
-				Service Request
-			</h1>
-
-			<form onSubmit={formik.handleSubmit} className="space-y-4">
-
-				{/* Service Base Price Display */}
-				{serviceDetails && (
-					<div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-						<p className="font-semibold text-blue-700">
-							Base Service Cost: ₹{serviceDetails.basePrice || 0}
-						</p>
-						<p className="text-gray-600 italic">This is the minimum initial charge.</p>
+			{/* If waiting (requestId present) show timer & waiting UI */}
+			{requestId ? (
+				<div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+					<div className="font-semibold mb-1">Waiting for mechanic to accept...</div>
+					<div>
+						Time remaining:{" "}
+						<span className="font-mono">
+							{Math.floor(timeLeft / 60)
+								.toString()
+								.padStart(2, "0")}
+							:
+							{String(timeLeft % 60).padStart(2, "0")}
+						</span>
 					</div>
-				)}
-
-				{/* Read-Only Fields
-				<div>
-					<Label>User ID</Label>
-					<Input name="userId" value={formik.values.userId || ''} readOnly />
+					<div className="mt-2 text-sm">Request ID: {requestId}</div>
+					<div className="mt-3">
+						<button
+							type="button"
+							className="px-3 py-1 bg-gray-200 rounded"
+							onClick={() => {
+								// cancel waiting
+								if (intervalRef.current) {
+									clearInterval(intervalRef.current);
+									intervalRef.current = null;
+								}
+								setRequestId(null);
+								setTimeLeft(300);
+							}}
+						>
+							Cancel
+						</button>
+					</div>
 				</div>
-				<div>
-					<Label>Service ID</Label>
-					<Input name="serviceId" value={formik.values.serviceId} readOnly />
-				</div> */}
+			) : null}
 
-				{/* Issue Description */}
-				<div>
-					<Label htmlFor="issueDescription">Issue Description *</Label>
-					<Textarea
-						id="issueDescription"
-						name="issueDescription"
-						value={formik.values.issueDescription}
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						required
-					/>
-					{formik.touched.issueDescription && formik.errors.issueDescription ? (
-						<div className="text-red-500 text-xs mt-1">{formik.errors.issueDescription}</div>
-					) : null}
-				</div>
+			{/* Show form only when not waiting */}
+			{!requestId && (
+				<>
+					<h1 className="text-2xl font-bold mb-4 text-center">Service Request</h1>
 
-				{/* Vehicle Type */}
-				<div>
-					<Label htmlFor="vehicleType">Vehicle Type</Label>
-					<select
-						id="vehicleType"
-						name="vehicleType"
-						value={formik.values.vehicleType}
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						className="border rounded p-2 w-full"
-					>
-						<option value="two-wheeler">Two-Wheeler</option>
-						<option value="four-wheeler">Four-Wheeler</option>
-					</select>
-				</div>
+					<form onSubmit={formik.handleSubmit} className="space-y-4">
+						{/* Service Base Price Display */}
+						{serviceDetails && (
+							<div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+								<p className="font-semibold text-blue-700">
+									Base Service Cost: ₹{serviceDetails.basePrice || 0}
+								</p>
+								<p className="text-gray-600 italic">This is the minimum initial charge.</p>
+							</div>
+						)}
 
-				{/* Location Fields */}
-				<div>
-					<Label>Location *</Label>
-					<Button
-						type="button"
-						variant="outline"
-						className="mb-2 w-full"
-						onClick={fetchGeoAddress}
-					>
-						Use Current Location
-					</Button>
-					<Textarea
-						name="userLocation.address" // Use dot notation for nested fields
-						value={formik.values.userLocation.address}
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						placeholder="Address (Manually enter or use location button)"
-						required
-					/>
-					{/* Error check for nested fields */}
-					{(formik.touched['userLocation.address'] && formik.errors['userLocation.address']) ||
-						(formik.touched.userLocation && formik.errors.userLocation) ? (
-						<div className="text-red-500 text-xs mt-1">
-							{formik.errors['userLocation.address'] || formik.errors.userLocation}
+						{/* Issue Description */}
+						<div>
+							<Label htmlFor="issueDescription">Issue Description *</Label>
+							<Textarea
+								id="issueDescription"
+								name="issueDescription"
+								value={formik.values.issueDescription}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								required
+							/>
+							{formik.touched.issueDescription && formik.errors.issueDescription ? (
+								<div className="text-red-500 text-xs mt-1">
+									{formik.errors.issueDescription}
+								</div>
+							) : null}
 						</div>
-					) : null}
 
-					{/* Hidden Inputs for Latitude/Longitude */}
-					<Input type="hidden" name="userLocation.latitude" value={formik.values.userLocation.latitude} />
-					<Input type="hidden" name="userLocation.longitude" value={formik.values.userLocation.longitude} />
-				</div>
+						{/* Vehicle Type */}
+						<div>
+							<Label htmlFor="vehicleType">Vehicle Type</Label>
+							<select
+								id="vehicleType"
+								name="vehicleType"
+								value={formik.values.vehicleType}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								className="border rounded p-2 w-full"
+							>
+								<option value="two-wheeler">Two-Wheeler</option>
+								<option value="four-wheeler">Four-Wheeler</option>
+							</select>
+						</div>
 
-				{/* Distance */}
-				<div className="hidden">
-					<Label htmlFor="distance">Distance (km)</Label>
-					<Input
-						id="distance"
-						type="number"
-						name="distance"
-						value={formik.values.distance}
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-					/>
-				</div>
+						{/* Location Fields */}
+						<div>
+							<Label>Location *</Label>
+							<Button
+								type="button"
+								variant="outline"
+								className="mb-2 w-full"
+								onClick={fetchGeoAddress}
+							>
+								Use Current Location
+							</Button>
+							<Textarea
+								name="userLocation.address"
+								value={formik.values.userLocation.address}
+								onChange={formik.handleChange}
+								onBlur={formik.handleBlur}
+								placeholder="Address (Manually enter or use location button)"
+								required
+							/>
+							{(formik.touched["userLocation.address"] && formik.errors["userLocation.address"]) ||
+								(formik.touched.userLocation && formik.errors.userLocation) ? (
+								<div className="text-red-500 text-xs mt-1">
+									{formik.errors["userLocation.address"] || formik.errors.userLocation}
+								</div>
+							) : null}
 
-				{/* Estimated Time */}
-				<div className="hidden">
-					<Label htmlFor="estimatedTime">Estimated Time (minutes)</Label>
-					<Input
-						id="estimatedTime"
-						type="number"
-						name="estimatedTime"
-						value={formik.values.estimatedTime}
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-					/>
-				</div>
+							<Input type="hidden" name="userLocation.latitude" value={formik.values.userLocation.latitude} />
+							<Input type="hidden" name="userLocation.longitude" value={formik.values.userLocation.longitude} />
+						</div>
 
-				{/* Base Price Initial Price */}
-				<div className="hidden">
-					<Label htmlFor="totalCost">Base Price (₹)</Label>
-					<Input
-						id="totalCost"
-						type="number"
-						name="totalCost"
-						value={formik.values.totalCost}
-						onChange={formik.handleChange}
-						onBlur={formik.handleBlur}
-						readOnly
-						className="bg-gray-100 cursor-not-allowed"
-					/>
-				</div>
+						<div className="hidden">
+							<Label htmlFor="distance">Distance (km)</Label>
+							<Input id="distance" type="number" name="distance" value={formik.values.distance} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+						</div>
 
-				<Button
-					type="submit"
-					className="w-full bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50"
-					disabled={formik.isSubmitting || !formik.isValid}
-				>
-					{formik.isSubmitting ? "Submitting..." : "Submit Request"}
-				</Button>
-			</form>
+						<div className="hidden">
+							<Label htmlFor="estimatedTime">Estimated Time (minutes)</Label>
+							<Input id="estimatedTime" type="number" name="estimatedTime" value={formik.values.estimatedTime} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+						</div>
+
+						<div className="hidden">
+							<Label htmlFor="totalCost">Base Price (₹)</Label>
+							<Input id="totalCost" type="number" name="totalCost" value={formik.values.totalCost} onChange={formik.handleChange} onBlur={formik.handleBlur} readOnly className="bg-gray-100 cursor-not-allowed" />
+						</div>
+
+						<Button
+							type="submit"
+							className="w-full bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50"
+							disabled={formik.isSubmitting || Object.keys(formik.errors).length > 0}
+						>
+							{formik.isSubmitting ? "Submitting..." : "Submit Request"}
+						</Button>
+					</form>
+				</>
+			)}
 		</div>
 	);
 }
