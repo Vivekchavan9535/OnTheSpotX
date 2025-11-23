@@ -92,7 +92,8 @@ export default function AuthProvider({ children }) {
 			navigate("/login");
 			resetForm();
 		} catch (err) {
-			const msg = err?.response?.data?.error || "Registration failed";
+			const msg = err?.response?.data?.error;
+			console.log(msg);
 			userDispatch({ type: "SERVER_ERRORS", payload: msg });
 			toastErr(msg);
 		}
