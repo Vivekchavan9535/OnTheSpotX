@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../config/axios.js";
 
 
-
-
 const serviceRequestSlice = createSlice({
 	name: "service-request",
 	initialState: {
