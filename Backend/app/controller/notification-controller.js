@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const instanceId = "instance152118";
-const token = "ryyqa7iuokuc0wue";
+const instanceId = "instance147843";
+const token = "a93xfclqumf9q5ol";
 
 //send whatsapp messages
 const sendWhatsApp = async (to, message) => {
