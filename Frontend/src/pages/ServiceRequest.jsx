@@ -110,7 +110,7 @@ export default function ServiceRequest() {
 				alert("Service request successfully submitted!");
 				resetForm();
 			} catch (err) {
-				const errorMsg = err?.response ?? err;
+				const errorMsg = err?.response.data ?? err;
 				alert(`Failed to submit request: ${JSON.stringify(errorMsg)}`);
 				console.error("Submission Error:", errorMsg, err);
 			}
