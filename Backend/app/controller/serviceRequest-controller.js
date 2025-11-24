@@ -42,7 +42,7 @@ serviceReqCtrl.create = async (req, res) => {
 			status: "waiting",
 			nearbyMechanics: nearbyMechanics.map(mech => ({
 				mechanicId: mech._id,
-				name: mech.name,
+				name: mech.fullName,
 				phone: mech.phone,
 				distanceMeters: mech.distanceMeters,
 			})),

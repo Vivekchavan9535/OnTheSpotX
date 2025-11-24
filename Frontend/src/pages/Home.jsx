@@ -2,6 +2,7 @@ import HeroImg from "../assets/HeroImg.png";
 import HeroCard from "../components/HeroCard";
 import logoImg from '../assets/logo.png'
 import IndiaText from '../components/IndiaText'
+import ReviewCards from "../components/ReviewCards";
 import { useNavigate } from "react-router-dom";
 
 const ourServices = [
@@ -213,7 +214,7 @@ export default function Home() {
 
 
 
-
+			<ReviewCards />
 
 
 
