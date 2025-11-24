@@ -52,7 +52,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				request.mechanicId = mechanic._id;
 				await request.save();
 
-				await sendWhatsApp(from, "✅ You have been assigned the service request." + `https://localhost:3030/finding-mechanics`);
+				await sendWhatsApp(from, "✅ You have been assigned the service request." + `https://onthespotx.vercel.app/finding-mechanics`);
 				console.log(`${from} accepted the request`);
 
 				// Notify others that this request has been taken
