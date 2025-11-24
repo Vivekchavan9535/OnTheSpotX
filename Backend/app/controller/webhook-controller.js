@@ -18,7 +18,17 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		await axios.post(webhookUrl, { received: req.body });
 
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
-		const from = (req.body?.data?.from || "").replace("@c.us", "");
+		const from = (req.body?.data?.from || "").replace("@c.us", "").trim();
+
+		console.log(from);
+		
+
+		// const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
+
+		// // send full +91 number without slicing
+		// const from = (req.body?.data?.from || "")
+		// 	.replace("@c.us", "")
+		// 	.trim();
 
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
@@ -98,15 +108,15 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 						: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
 					sendWhatsApp(mech.phone,
-  `🔧 *Hey Mechanic!* You have a new service request:\n\n` +
-  `🚗 *Vehicle:* ${request?.vehicleType}\n` +
-  `⚠️ *Issue:* ${request?.issueDescription}\n` +
-  `📍 *Location:* ${request?.userLocation?.address}\n` +
-  `📏 *Distance:* ${distance}\n\n` +
-  `Reply with:\n` +
-  `✅ *1* — *Accept*\n` +
-  `❌ *2* — *Reject*`
-			 )
+						`🔧 *Hey Mechanic!* You have a new service request:\n\n` +
+						`🚗 *Vehicle:* ${request?.vehicleType}\n` +
+						`⚠️ *Issue:* ${request?.issueDescription}\n` +
+						`📍 *Location:* ${request?.userLocation?.address}\n` +
+						`📏 *Distance:* ${distance}\n\n` +
+						`Reply with:\n` +
+						`✅ *1* — *Accept*\n` +
+						`❌ *2* — *Reject*`
+					)
 					console.log(`Sent to nearby mechanics : ${mech?.name}`);
 				}
 
