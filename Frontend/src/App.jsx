@@ -26,6 +26,7 @@ import logoImg from './assets/logo.png'
 import MechanicProfile from "./pages/MechanicProfile"
 import { fetchMechProfile } from './slices/mechanicSlice.js'
 import ServiceRequest from './pages/ServiceRequest'
+import FindingMechanics from './pages/FindingMechanics'
 
 
 
@@ -89,6 +90,7 @@ function App() {
 					<Route path="/user/:id" element={<ShowUser />} />
 					<Route path="/mechanic-profile" element={<MechanicProfile />} />
 					<Route path="/service-request/:serviceId" element={<ServiceRequest />} />
+					<Route path="/finding-mechanics" element={<FindingMechanics/>} />
 
 				</Routes>
 			</SearchContext.Provider>

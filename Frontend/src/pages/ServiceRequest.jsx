@@ -1,6 +1,6 @@
 // src/pages/ServiceRequest.jsx
 import { useState, useContext, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import { useFormik } from "formik"; // Import useFormik
 import axios from "../config/axios.js"; // Your configured Axios instance
 import UserContext from "../context/userContext";
@@ -22,6 +22,8 @@ export default function ServiceRequest() {
 	const [timeLeft, setTimeLeft] = useState(300); // 300 sec = 5 min
 	const [requestId, setRequestId] = useState(null);
 	const intervalRef = useRef(null);
+
+	const navigate = useNavigate()
 
 	const validate = (values) => {
 		const errors = {};
@@ -78,25 +80,31 @@ export default function ServiceRequest() {
 
 				if (res.data.requestId) {
 					setRequestId(res.data.requestId);
-					setTimeLeft(300);
+					// setTimeLeft(300);
 
-					if (intervalRef.current) {
-						clearInterval(intervalRef.current);
-						intervalRef.current = null;
-					}
+					// if (intervalRef.current) {
+					// 	clearInterval(intervalRef.current);
+					// 	intervalRef.current = null;
+					// }
 
-					// start countdown
-					intervalRef.current = setInterval(() => {
-						setTimeLeft((prev) => {
-							if (prev <= 1) {
-								clearInterval(intervalRef.current);
-								intervalRef.current = null;
-								setRequestId(null);
-								return 0;
-							}
-							return prev - 1;
-						});
-					}, 1000);
+					// // start countdown
+					// intervalRef.current = setInterval(() => {
+					// 	setTimeLeft((prev) => {
+					// 		if (prev <= 1) {
+					// 			clearInterval(intervalRef.current);
+					// 			intervalRef.current = null;
+					// 			setRequestId(null);
+					// 			return 0;
+					// 		}
+					// 		return prev - 1;
+					// 	});
+					// }, 1000);
+
+					localStorage.setItem('requestId',res.data.requestId)
+					localStorage.setItem("requestStartTime", String(Date.now()));
+					navigate('/finding-mechanics')
+
+
 				}
 
 				alert("Service request successfully submitted!");
@@ -204,15 +212,15 @@ export default function ServiceRequest() {
 		);
 	};
 
-	useEffect(() => {
-		// cleanup interval on unmount
-		return () => {
-			if (intervalRef.current) {
-				clearInterval(intervalRef.current);
-				intervalRef.current = null;
-			}
-		};
-	}, []);
+	// useEffect(() => {
+	// 	// cleanup interval on unmount
+	// 	return () => {
+	// 		if (intervalRef.current) {
+	// 			clearInterval(intervalRef.current);
+	// 			intervalRef.current = null;
+	// 		}
+	// 	};
+	// }, []);
 
 	if (loading || serviceLoading) {
 		return <p className="text-center p-8">Loading user and service details...</p>;
@@ -227,7 +235,7 @@ export default function ServiceRequest() {
 	return (
 		<div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
 			{/* If waiting (requestId present) show timer & waiting UI */}
-			{requestId ? (
+			{/* {requestId ? (
 				<div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
 					<div className="font-semibold mb-1">Waiting for mechanic to accept...</div>
 					<div>
@@ -259,10 +267,10 @@ export default function ServiceRequest() {
 						</button>
 					</div>
 				</div>
-			) : null}
+			) : null} */}
 
 			{/* Show form only when not waiting */}
-			{!requestId && (
+			{/* {!requestId && ( */}
 				<>
 					<h1 className="text-2xl font-bold mb-4 text-center">Service Request</h1>
 
@@ -363,7 +371,7 @@ export default function ServiceRequest() {
 						</Button>
 					</form>
 				</>
-			)}
+			{/* )} */}
 		</div>
 	);
 }
