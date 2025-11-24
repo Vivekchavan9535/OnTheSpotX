@@ -28,7 +28,7 @@ export default function ServiceRequest() {
 
 		if (!values.issueDescription) {
 			errors.issueDescription = "Issue description is required.";
-		} else if (values.issueDescription.trim().length < 10) {
+		} else if (values.issueDescription.trim().length < 3) {
 			errors.issueDescription = "Issue description must be at least 10 characters.";
 		}
 

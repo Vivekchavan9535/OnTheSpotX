@@ -28,21 +28,26 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		const mechanic = await Mechanic.findOne({ phone: from });
 		if (!mechanic) return res.status(404).json("Mechanic not found");
 
-		// try to find the request accepted by this mechanic
+		// Find the latest waiting request that includes this mechanic in nearbyMechanics
 		let request = await ServiceRequest.findOne({
-			status: "accepted",
-			mechanicId: mechanic._id
-		});
+			status: "waiting",
+			"nearbyMechanics.mechanicId": mechanic._id
+		}).sort({ createdAt: -1 });
 
-		// if none then find the latest waiting request
+		// If no waiting request with this mechanic, check if they already accepted one
+		let alreadyAccepted = null;
 		if (!request) {
-			request = await ServiceRequest.findOne({ status: "waiting" }).sort({ createdAt: -1 });
+			alreadyAccepted = await ServiceRequest.findOne({
+				status: "accepted",
+				mechanicId: mechanic._id
+			});
 		}
 
 
 		// Handle accept (1)
 		if (messageText === "1") {
-			if (request.status === "waiting") {
+			// Case 1: Mechanic accepts a waiting request
+			if (request && request.status === "waiting") {
 				request.status = "accepted";
 				request.mechanicId = mechanic._id;
 				await request.save();
@@ -50,7 +55,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				await sendWhatsApp(from, "✅ You have been assigned the service request.");
 				console.log(`${from} accepted the request`);
 
-				// Notify others
+				// Notify others that this request has been taken
 				const otherMechanics = request.nearbyMechanics.filter(
 					(m) => String(m.mechanicId) !== String(mechanic._id)
 				);
@@ -62,15 +67,21 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				return res.status(200).json("Mechanic accepted the request");
 			}
 
-			// If already accepted by this mechanic
-			if (String(request.mechanicId) === String(mechanic._id)) {
+			// Case 2: Mechanic already accepted a request previously
+			if (alreadyAccepted && String(alreadyAccepted.mechanicId) === String(mechanic._id)) {
 				await sendWhatsApp(from, "⚠️ You have already accepted this request.");
 				return res.status(200).json("Already accepted by same mechanic");
 			}
 
-			// If accepted by someone else
-			await sendWhatsApp(from, "⚠️ This request was already accepted by another mechanic.");
-			return res.status(200).json("Already accepted by someone else");
+			// Case 3: Another mechanic accepted it already
+			if (alreadyAccepted && String(alreadyAccepted.mechanicId) !== String(mechanic._id)) {
+				await sendWhatsApp(from, "⚠️ This request was already accepted by another mechanic.");
+				return res.status(200).json("Already accepted by someone else");
+			}
+
+			// Case 4: No request found at all
+			await sendWhatsApp(from, "❌ No active service request found. Please try again later.");
+			return res.status(404).json("No service request found");
 		}
 
 
@@ -78,10 +89,10 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		// ✅ Handle REJECT (2)
 		if (messageText === "2") {
 			//handle reject and re notify
-			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
-				request.status = "waiting";
-				request.mechanicId = null;
-				await request.save();
+			if (alreadyAccepted && String(alreadyAccepted.mechanicId) === String(mechanic._id)) {
+				alreadyAccepted.status = "waiting";
+				alreadyAccepted.mechanicId = null;
+				await alreadyAccepted.save();
 
 				await sendWhatsApp(from, "❌ You have rejected this request. It’s now open again for others.");
 
@@ -89,33 +100,31 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 
 				//re notify nearby mechanics // im using for..of loop bcz sendWhatsapp is async
-				for (const mech of request.nearbyMechanics.filter((mech) => String(mech.phone) !== String(from))) {
-
-					console.log(mech.phone !== from);
+				for (const mech of alreadyAccepted.nearbyMechanics.filter((mech) => String(mech.phone) !== String(from))) {
 
 					const distance = mech.distanceMeters < 1000
 						? `${mech.distanceMeters} m`
 						: `${(mech.distanceMeters / 1000).toFixed(1)} km`;
 
-					sendWhatsApp(mech.phone,
-  `🔧 *Hey Mechanic!* You have a new service request:\n\n` +
-  `🚗 *Vehicle:* ${request?.vehicleType}\n` +
-  `⚠️ *Issue:* ${request?.issueDescription}\n` +
-  `📍 *Location:* ${request?.userLocation?.address}\n` +
-  `📏 *Distance:* ${distance}\n\n` +
-  `Reply with:\n` +
-  `✅ *1* — *Accept*\n` +
-  `❌ *2* — *Reject*`
-			 )
+					await sendWhatsApp(mech.phone,
+						`🔧 *Hey Mechanic!* You have a new service request:\n\n` +
+						`🚗 *Vehicle:* ${alreadyAccepted?.vehicleType}\n` +
+						`⚠️ *Issue:* ${alreadyAccepted?.issueDescription}\n` +
+						`📍 *Location:* ${alreadyAccepted?.userLocation?.address}\n` +
+						`📏 *Distance:* ${distance}\n\n` +
+						`Reply with:\n` +
+						`✅ *1* — *Accept*\n` +
+						`❌ *2* — *Reject*`
+					);
 					console.log(`Sent to nearby mechanics : ${mech?.name}`);
 				}
 
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
 				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
-			await sendWhatsApp(from, "❌ You have rejected this request.");
-			console.log(`Mechanic ${from} rejected but was not assigned.`);
-			return res.status(200).json("Mechanic rejected but not assigned");
+			await sendWhatsApp(from, "❌ You haven't accepted any request to reject.");
+			console.log(`Mechanic ${from} tried to reject but was not assigned.`);
+			return res.status(200).json("Mechanic tried to reject but not assigned");
 		}
 
 		console.log("Not valid response");
