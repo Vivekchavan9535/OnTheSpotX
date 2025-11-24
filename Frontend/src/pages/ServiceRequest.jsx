@@ -21,7 +21,6 @@ export default function ServiceRequest() {
 
 	const [timeLeft, setTimeLeft] = useState(300); // 300 sec = 5 min
 	const [requestId, setRequestId] = useState(null);
-	
 	const intervalRef = useRef(null);
 
 	const validate = (values) => {
@@ -131,9 +130,11 @@ export default function ServiceRequest() {
 
 				const fetchedDetails = res.data;
 				setServiceDetails(fetchedDetails);
+				
 
 				formik.setFieldValue("totalCost", fetchedDetails.basePrice || 0);
 				formik.setFieldValue("serviceId", serviceId);
+				formik.setFieldValue("issueDescription", fetchedDetails.title)
 			} catch (err) {
 				const errorMsg = err?.response?.data || String(err);
 				setServiceError(errorMsg);
@@ -182,11 +183,13 @@ export default function ServiceRequest() {
 					if (formik.errors["userLocation.address"]) {
 						formik.setFieldError("userLocation.address", undefined);
 					}
+					
 				} catch (err) {
 					console.error("Reverse geocoding failed", err);
 					alert("Failed to find address from coordinates.");
 				}
 			},
+
 			(error) => {
 				console.error("Geolocation Error:", error);
 				let message = "Could not get your location. Please check settings.";
@@ -283,7 +286,6 @@ export default function ServiceRequest() {
 								value={formik.values.issueDescription}
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
-								required
 							/>
 							{formik.touched.issueDescription && formik.errors.issueDescription ? (
 								<div className="text-red-500 text-xs mt-1">
@@ -325,7 +327,6 @@ export default function ServiceRequest() {
 								onChange={formik.handleChange}
 								onBlur={formik.handleBlur}
 								placeholder="Address (Manually enter or use location button)"
-								required
 							/>
 							{(formik.touched["userLocation.address"] && formik.errors["userLocation.address"]) ||
 								(formik.touched.userLocation && formik.errors.userLocation) ? (
@@ -356,7 +357,7 @@ export default function ServiceRequest() {
 						<Button
 							type="submit"
 							className="w-full bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50"
-							disabled={formik.isSubmitting || Object.keys(formik.errors).length > 0}
+							// disabled={formik.isSubmitting || Object.keys(formik.errors).length > 0}
 						>
 							{formik.isSubmitting ? "Submitting..." : "Submit Request"}
 						</Button>

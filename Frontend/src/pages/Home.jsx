@@ -2,6 +2,8 @@ import HeroImg from "../assets/HeroImg.png";
 import HeroCard from "../components/HeroCard";
 import logoImg from '../assets/logo.png'
 import IndiaText from '../components/IndiaText'
+import { useNavigate } from "react-router-dom";
+
 const ourServices = [
 	{
 		id: 1,
@@ -32,6 +34,8 @@ const ourServices = [
 	},
 ];
 
+
+
 const steps = [
 	{
 		id: 1,
@@ -60,7 +64,17 @@ const steps = [
 
 ];
 
+
 export default function Home() {
+	const navigate = useNavigate()
+
+	const onBook = () => {
+		if (localStorage.getItem('token')) {
+			navigate('/services')
+		}
+	}
+
+
 	return (
 		<>
 			{/* Hero Section */}
@@ -69,7 +83,7 @@ export default function Home() {
 					<div className="flex flex-col justify-center items-center sm:items-start text-center sm:text-left">
 						<h1 className="text-[25px] sm:text-[50px] font-semibold leading-tight">
 							We Don't Just Fix.
-							<br/>
+							<br />
 							We Keep <IndiaText /> Moving.
 						</h1>
 
@@ -77,6 +91,7 @@ export default function Home() {
 							<button
 								aria-label="Book Service"
 								className="font-semibold bg-yellow-500 hover:bg-[#1e323f] text-black rounded-lg px-8 py-3 transition-colors"
+								onClick={onBook}
 							>
 								Book Service
 							</button>
