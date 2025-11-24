@@ -21,11 +21,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
     await axios.post(webhookUrl, { received: req.body });
 
     const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
-    const fromRaw = (req.body?.data?.from || "").trim();
-    // remove prefix like "91" or "91" + ... and @c.us if present — your original logic removed first 2 chars
-    // keep your original logic but ensure we remove @c.us
-    const from = fromRaw.slice(2).replace("@c.us", "").trim();
-
+    const from = (req.body?.data?.from)
     console.log(`Webhook msg: "${messageText}" from: ${from}`);
 
     if (!messageText) {
