@@ -21,7 +21,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		const from = ("+" + (req.body?.data?.from || "").replace("@c.us", "").trim()).replace("++", "+");
 
 
-		
+
 
 		console.log(from);
 
@@ -65,7 +65,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 				//customer will get notified if mech accepts his service request
 				console.log("customer num" + request.customerNumber);
-				
+
 				if (request.customerNumber) {
 					const to = request.customerNumber
 					await sendWhatsApp(to,
@@ -137,18 +137,20 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				}
 
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
+				
+				// if mech rejects tell customer that mechanic rejected
+				if (request.customerNumber) {
+					await sendWhatsApp(
+						request.customerNumber,
+						`⚠️ The mechanic has declined your request.\n` +
+						`We're looking for another nearby mechanic for you.`
+					);
+				}
+
 				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
 			await sendWhatsApp(from, "❌ You have rejected this request.");
 
-			// if mech rejects tell customer that mechanic rejected
-			if (request.customerNumber) {
-				await sendWhatsApp(
-					request.customerNumber,
-					`⚠️ The mechanic has declined your request.\n` +
-					`We're looking for another nearby mechanic for you.`
-				);
-			}
 
 			console.log(`Mechanic ${from} rejected but was not assigned.`);
 			return res.status(200).json("Mechanic rejected but not assigned");
