@@ -11,9 +11,9 @@ const serviceRequestSchema = new mongoose.Schema({
 		ref: "Service",
 		required: true,
 	},
-	customerPhone:{
+	customerNumber:{
 		type:String,
-		// required:true
+		required:true
 	},
 	vehicleType:{
 		type:String,
