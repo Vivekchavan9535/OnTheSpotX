@@ -63,6 +63,8 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				console.log(`${from} accepted the request`);
 
 				//customer will get notified if mech accepts his service request
+				console.log("customer num" + request.customerNumber);
+				
 				if (request.customerNumber) {
 					const to = request.customerPhone
 					await sendWhatsApp(to,
