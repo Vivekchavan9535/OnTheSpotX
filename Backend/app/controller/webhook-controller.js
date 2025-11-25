@@ -18,7 +18,8 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 		await axios.post(webhookUrl, { received: req.body });
 
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
-		const from = "+" + (req.body?.data?.from || "").replace("@c.us", "").trim();
+		const from = ("+" + (req.body?.data?.from || "").replace("@c.us", "").trim()).replace("++", "+");
+
 
 		
 
