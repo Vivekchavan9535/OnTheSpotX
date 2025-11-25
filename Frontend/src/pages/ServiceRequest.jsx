@@ -49,7 +49,7 @@ export default function ServiceRequest() {
 	const formik = useFormik({
 		initialValues: {
 			userId: null,
-			customerPhone:"",
+			customerNumber:"",
 			serviceId: serviceId,
 			issueDescription: "",
 			vehicleType: "two-wheeler",
@@ -158,8 +158,8 @@ export default function ServiceRequest() {
 	useEffect(() => {
 		if (user && !loading) {
 			formik.setFieldValue("userId", user._id);
-			formik.setFieldValue("phone",user.phone)
-			console.log(user.phone);
+			formik.setFieldValue("customerNumber",user.customerNumber)
+			console.log(user.customerPhone);
 			
 		}
 	}, [user, loading]);

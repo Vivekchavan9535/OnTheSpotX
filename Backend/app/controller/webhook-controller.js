@@ -67,7 +67,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				console.log("customer num" + request.customerNumber);
 				
 				if (request.customerNumber) {
-					const to = request.customerPhone
+					const to = request.customerNumber
 					await sendWhatsApp(to,
 						`✅ A mechanic has accepted your request!\n\n` +
 						`👨‍🔧 Mechanic: ${mechanic.fullName || "Your assigned mechanic"}\n` +
