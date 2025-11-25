@@ -13,7 +13,7 @@ const serviceRequestSchema = new mongoose.Schema({
 	},
 	customerNumber:{
 		type:String,
-		required:true
+		// required:true
 	},
 	vehicleType:{
 		type:String,
