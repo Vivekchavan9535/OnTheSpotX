@@ -49,6 +49,7 @@ export default function ServiceRequest() {
 	const formik = useFormik({
 		initialValues: {
 			userId: null,
+			customerPhone:"",
 			serviceId: serviceId,
 			issueDescription: "",
 			vehicleType: "two-wheeler",
@@ -157,8 +158,10 @@ export default function ServiceRequest() {
 	useEffect(() => {
 		if (user && !loading) {
 			formik.setFieldValue("userId", user._id);
+			formik.setFieldValue("phone",user.phone)
+			console.log(user.phone);
+			
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [user, loading]);
 
 	// Geolocation
@@ -355,6 +358,12 @@ export default function ServiceRequest() {
 						<div className="hidden">
 							<Label htmlFor="estimatedTime">Estimated Time (minutes)</Label>
 							<Input id="estimatedTime" type="number" name="estimatedTime" value={formik.values.estimatedTime} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+						</div>
+
+						{/* Number */}
+						<div className="hidden">
+							<Label htmlFor="">Phone:</Label>
+							<Input id="" type="text" name="customerPhone" value={formik.values.customerPhone} onChange={formik.handleChange} onBlur={formik.handleBlur} />
 						</div>
 
 						<div className="hidden">

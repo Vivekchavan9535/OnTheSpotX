@@ -11,6 +11,10 @@ const serviceRequestSchema = new mongoose.Schema({
 		ref: "Service",
 		required: true,
 	},
+	customerPhone:{
+		type:String,
+		required:true
+	},
 	vehicleType:{
 		type:String,
 		enum:["two-wheeler","three-wheeler","four-wheeler"]

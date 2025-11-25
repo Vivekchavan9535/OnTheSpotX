@@ -8,10 +8,11 @@ const serviceReqCtrl = {};
 
 serviceReqCtrl.create = async (req, res) => {
 	const body = req.body;
+	
 
 	try {
-		console.log("📨 Service Request received from:", req.user?.email);
-		console.log("📨 Body:", JSON.stringify(body, null, 2));
+		console.log("Service Request received from:", req.user?.email);
+		console.log("Body:", JSON.stringify(body, null, 2));
 
 		// Find all mechanics
 		const mechanics = await Mechanic.find();
