@@ -3,7 +3,7 @@ import ServiceRequest from "../model/serviceRequest-model.js";
 import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
-const webhookUrl = "https://webhook.site/ce2753cf-967f-4d5b-86bd-6af0a6949dbd";
+const webhookUrl = "https://webhook.site/6b05397b-fd48-430b-8dac-3a299c06aebf";
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
@@ -135,7 +135,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
 			await sendWhatsApp(from, "❌ You have rejected this request.");
-			
+
 			// if mech rejects tell customer that mechanic rejected
 			if (request.customerPhone) {
 				await sendWhatsApp(
