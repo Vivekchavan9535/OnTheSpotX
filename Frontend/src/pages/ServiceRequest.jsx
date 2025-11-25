@@ -158,8 +158,8 @@ export default function ServiceRequest() {
 	useEffect(() => {
 		if (user && !loading) {
 			formik.setFieldValue("userId", user._id);
-			formik.setFieldValue("customerNumber",user.customerNumber)
-			console.log(user.customerPhone);
+			formik.setFieldValue("customerNumber",user.phone)
+			console.log(user.phone);
 			
 		}
 	}, [user, loading]);
