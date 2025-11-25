@@ -142,9 +142,9 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			await sendWhatsApp(from, "❌ You have rejected this request.");
 
 			// if mech rejects tell customer that mechanic rejected
-			if (request.customerPhone) {
+			if (request.customerNumber) {
 				await sendWhatsApp(
-					request.customerPhone,
+					request.customerNumber,
 					`⚠️ The mechanic has declined your request.\n` +
 					`We're looking for another nearby mechanic for you.`
 				);
