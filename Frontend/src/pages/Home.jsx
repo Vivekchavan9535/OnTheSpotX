@@ -119,6 +119,7 @@ export default function Home() {
 								<button
 									aria-label="Book Service"
 									className="w-full font-semibold shadow p-2 text-[16px] bg-yellow-500 rounded-xl hover:bg-yellow-400 transition"
+									onClick={onBook}
 								>
 									Book Service
 								</button>
