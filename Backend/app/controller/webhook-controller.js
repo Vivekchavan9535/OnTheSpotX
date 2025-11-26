@@ -65,13 +65,10 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				} else {
 					console.log("Mechanic not found in nearbyMechanics for request", request._id);
 				}
-				
+
 				await request.save();
 
 				await sendWhatsApp(from, "✅ You have been assigned the service request.");
-
-				console.log(mech.name + " " + mechResponse);
-
 
 				console.log(`${from} accepted the request`);
 
