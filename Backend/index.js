@@ -55,6 +55,7 @@ app.delete('/service/:id',userAuthentication,userAuthorization(['admin']),servic
 
 //service request
 app.post('/service-request',userAuthentication,userAuthorization(['customer']),serviceReqCtrl.create)
+app.get('/service-request/:id',userAuthentication,userAuthorization(['customer']),serviceReqCtrl.getMyRequest)
 
 
 

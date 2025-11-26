@@ -86,7 +86,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 						`📞 Phone: *${mechanic.phone}*\n` +
 						`━━━━━━━━━━━━━━\n` +
 						`📍 *Track Your Mechanic:*\n` +
-						`🔗 http://localhost:5173/finding-mechanics\n` +
+						`🔗 http://localhost:5173/finding-mechanics/${request._id}\n` +
 						`━━━━━━━━━━━━━━\n` +
 						`🕒 Estimated Arrival: *10-20 min*\n` +
 						`✅ Stay available for calls.\n\n` +

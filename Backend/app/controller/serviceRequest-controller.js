@@ -8,7 +8,7 @@ const serviceReqCtrl = {};
 
 serviceReqCtrl.create = async (req, res) => {
 	const body = req.body;
-	
+
 
 	try {
 		console.log("Service Request received from:", req.user?.email);
@@ -91,6 +91,18 @@ serviceReqCtrl.create = async (req, res) => {
 };
 
 
+serviceReqCtrl.getMyRequest = async (req, res) => {
+	const requestId = req.params.id;
+	try {
+		const request = await ServiceRequest.findById(requestId).populate("mechanicId");
+
+		if (!request) return res.status(404).json("Not found");
+
+		res.status(200).json({ request});
+	} catch (err) {
+		res.status(500).json(err.message);
+	}
+};
 
 
 export default serviceReqCtrl;
