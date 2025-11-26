@@ -75,7 +75,7 @@ function App() {
 
 	return (
 		<>
-			<ToastContainer className="mt-20" position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark" transition={Bounce} />
+			<ToastContainer className="" position="top-center" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark" transition={Bounce} />
 
 			<SearchContext.Provider value={{ search, setSearch }}>
 				<Navbar />

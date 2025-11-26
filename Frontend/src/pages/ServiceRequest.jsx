@@ -125,7 +125,7 @@ export default function ServiceRequest() {
 				resetForm();
 			} catch (err) {
 				const errorMsg = err?.response.data ?? err;
-				alert(`Failed to submit request: ${JSON.stringify(errorMsg)}`);
+				toastErr(`Failed to submit request: ${JSON.stringify(errorMsg)}`);
 				console.error("Submission Error:", errorMsg, err);
 			}
 		},
