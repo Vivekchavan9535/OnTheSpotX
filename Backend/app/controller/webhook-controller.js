@@ -3,7 +3,7 @@ import ServiceRequest from "../model/serviceRequest-model.js";
 import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
-const webhookUrl = "https://webhook.site/6b05397b-fd48-430b-8dac-3a299c06aebf";
+const webhookUrl = "https://webhook.site/2cfb5511-d974-458d-8164-7e87c3fcc054";
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
@@ -19,11 +19,6 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
 		const from = ("+" + (req.body?.data?.from || "").replace("@c.us", "").trim()).replace("++", "+");
-
-
-
-
-		console.log(from);
 
 
 		// const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
@@ -61,6 +56,11 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				await request.save();
 
 				await sendWhatsApp(from, "✅ You have been assigned the service request.");
+
+				const mechResponse = await ServiceRequest.findOne({ phone: from });
+				console.log(mechResponse.response);
+
+
 				console.log(`${from} accepted the request`);
 
 				//customer will get notified if mech accepts his service request
@@ -137,7 +137,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				}
 
 				console.log(`Mechanic ${from} rejected and reopened the request.`);
-				
+
 				// if mech rejects tell customer that mechanic rejected
 				if (request.customerNumber) {
 					await sendWhatsApp(
