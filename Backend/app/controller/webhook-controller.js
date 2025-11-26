@@ -86,7 +86,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 						`📞 Phone: *${mechanic.phone}*\n` +
 						`━━━━━━━━━━━━━━\n` +
 						`📍 *Track Your Mechanic:*\n` +
-						`🔗 http://localhost:5173/finding-mechanics/${request._id}\n` +
+						`🔗 https://onethespotx.vercel.app/finding-mechanics/${request._id}\n` +
 						`━━━━━━━━━━━━━━\n` +
 						`🕒 Estimated Arrival: *10-20 min*\n` +
 						`✅ Stay available for calls.\n\n` +
@@ -174,10 +174,15 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				if (request.customerNumber) {
 					await sendWhatsApp(
 						request.customerNumber,
-						`⚠️ The mechanic has declined your request.\n` +
-						`We're looking for another nearby mechanic for you.`
+						`❌ *Mechanic Declined*\n\n` +
+						`🔍 Searching for another mechanic…\n\n` +
+						`📍 *Track status here:*\n` +
+						`🔗 http://localhost:5173/finding-mechanics/${request._id}\n\n` +
+						`🙏 Thank you for your patience!`
 					);
 				}
+
+
 
 				return res.status(200).json("Mechanic rejected and reopened the request");
 			}
