@@ -95,7 +95,7 @@ export default function UsersTable() {
 						</div>
 					))
 				) : (
-					sortedUsers.slice(1).map((user) => (
+					sortedUsers.filter((user)=>user.role!=="admin").map((user) => (
 						<div key={user._id} className="p-4 bg-white rounded-lg shadow border flex items-start gap-4">
 							<Avatar><AvatarFallback>{(user.fullName || "U").split(" ").map(n => n[0]).join("").toUpperCase()}</AvatarFallback></Avatar>
 							<div className="flex-1">
@@ -177,7 +177,7 @@ export default function UsersTable() {
 							</TableHeader>
 
 							<TableBody>
-								{sortedUsers.slice(1).map((user) => (
+								{sortedUsers.filter((user)=>user.role!=="admin").map((user) => (
 									<TableRow key={user._id}>
 										<TableCell className="flex items-center gap-3">
 											<Avatar>
