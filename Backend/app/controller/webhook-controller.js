@@ -73,14 +73,24 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				console.log(`${from} accepted the request`);
 
 				//customer will get notified if mech accepts his service request
-				console.log("customer num" + request.customerNumber);
+				console.log("customer num" + " " + request.customerNumber);
 
 				if (request.customerNumber) {
 					const to = request.customerNumber
-					await sendWhatsApp(to,
-						`✅ A mechanic has accepted your request!\n\n` +
-						`👨‍🔧 Mechanic: ${mechanic.fullName || "Your assigned mechanic"}\n` +
-						`📞 Contact: ${mechanic.phone}\n\n`
+					await sendWhatsApp(
+						to,
+						`🟢 *Request Accepted!*\n` +
+						`━━━━━━━━━━━━━━\n` +
+						`👨‍🔧 *Mechanic Assigned*\n` +
+						`🚹 Name: *${mechanic.fullName || "Assigned Mechanic"}*\n` +
+						`📞 Phone: *${mechanic.phone}*\n` +
+						`━━━━━━━━━━━━━━\n` +
+						`📍 *Track Your Mechanic:*\n` +
+						`🔗 http://localhost:5173/finding-mechanics\n` +
+						`━━━━━━━━━━━━━━\n` +
+						`🕒 Estimated Arrival: *10-20 min*\n` +
+						`✅ Stay available for calls.\n\n` +
+						`🙌 Thank you for choosing us!`
 					);
 				}
 
@@ -116,7 +126,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
 				request.status = "waiting";
 				request.mechanicId = null;
-				
+
 				//handling status of request and changing response of mechanic who reject the request
 				const mech = request.nearbyMechanics.find(
 					m => m.mechanicId.equals(mechanic._id)
