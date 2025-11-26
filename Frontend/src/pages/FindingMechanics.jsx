@@ -5,7 +5,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Loader2, Phone, ArrowLeft, MapPin, Wrench } from "lucide-react";
 import axios from "../config/axios";
-
 import { toast } from "react-toastify";
 
 const toastErr = (msg) =>
@@ -67,7 +66,7 @@ export default function FindingMechanics() {
 				// if previously accepted and now changed mechanic cancelled/waiting
 				if (request?.status === "accepted" && updated.status === "waiting") {
 					toastErr("Mechanic cancelled the request. Searching again...");
-					setRequest(updated); 
+					setRequest(updated);
 					return;
 				}
 
@@ -144,12 +143,16 @@ export default function FindingMechanics() {
 			<Card className="w-full max-w-md shadow-lg border border-border/60">
 				<CardHeader>
 					<CardTitle className="flex justify-between items-center text-base">
-						{mechanic && <div className="flex flex-col gap-1">
-							<span className="font-semibold">Mechanic Assigned ✅</span>
-							<span className="text-xs text-muted-foreground">
-								Your roadside assistance is on the way.
+						<div className="flex flex-col gap-1">
+							<span className="font-semibold">
+								{mechanic ? "Mechanic Assigned ✅" : "Searching for Mechanic..."}
 							</span>
-						</div>}
+							<span className="text-xs text-muted-foreground">
+								{mechanic
+									? "Your roadside assistance is on the way."
+									: "We’re looking for the best nearby mechanic for you."}
+							</span>
+						</div>
 
 						{shortId && (
 							<span className="text-[11px] px-2 py-1 rounded-full bg-muted text-muted-foreground">
@@ -169,13 +172,17 @@ export default function FindingMechanics() {
 						) : (
 							<Loader2 className="h-3 w-3 animate-spin" />
 						)}
-						<span className="capitalize">
+						<span className="capitalize font-medium">
 							Status: {status || "updating..."}
 						</span>
 					</div>
 
 					{/* Mechanic Details */}
-					<div className="rounded-lg border bg-card/40 p-3 space-y-2">
+					<div className="rounded-lg border bg-card/40 p-3 space-y-3">
+						<p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wide">
+							Mechanic Details
+						</p>
+
 						<div className="flex items-center gap-2 text-sm">
 							<Wrench className="h-4 w-4 text-muted-foreground" />
 							<div>
@@ -196,14 +203,34 @@ export default function FindingMechanics() {
 						<div className="flex items-center gap-2 text-sm">
 							<Phone className="h-4 w-4 text-muted-foreground" />
 							<div>
-								<p className="text-xs text-muted-foreground">Phone</p>
-								<p>{mechanic?.phone || "-"}</p>
+								<p className="text-xs  text-muted-foreground">Mechanic phone</p>
+								<p className="font-medium">{mechanic?.phone || "-"}</p>
 							</div>
 						</div>
+
+						{/* Mechanic Location */}
+						{mechanic?.location?.address && (
+							<div className="flex items-start gap-3 text-sm">
+								<MapPin className="h-13 w-13 text-red-500 mt-[2px]" />
+
+								<div className="leading-tight">
+									<p className="text-xs font-semibold text-muted-foreground">
+										Mechanic Location
+									</p>
+									<p className="font-medium text-[13px]">
+										{mechanic.location.address}
+									</p>
+								</div>
+							</div>
+						)}
 					</div>
 
-					{/* Request Details */}
-					<div className="space-y-2 text-sm">
+					{/* Request / User Details */}
+					<div className="space-y-3 text-sm">
+						<p className="text-[11px] font-semibold uppercase text-muted-foreground tracking-wide">
+							Your Request
+						</p>
+
 						{request.issueDescription && (
 							<p>
 								<span className="font-semibold">Issue:&nbsp;</span>
@@ -211,14 +238,20 @@ export default function FindingMechanics() {
 							</p>
 						)}
 
+						{/* User Location */}
 						{request.userLocation?.address && (
-							<p className="flex items-start gap-1">
-								<MapPin className="h-4 w-4 mt-[2px] text-muted-foreground" />
-								<span>
-									<span className="font-semibold">Location:&nbsp;</span>
-									{request.userLocation.address}
-								</span>
-							</p>
+							<div className="flex items-start gap-3 text-sm">
+								<MapPin className="h-10 w-10 text-blue-500 mt-[2px]" />
+
+								<div className="leading-tight">
+									<p className="text-xs font-semibold text-muted-foreground">
+										Your Location
+									</p>
+									<p className="font-medium text-[13px]">
+										{request.userLocation.address}
+									</p>
+								</div>
+							</div>
 						)}
 					</div>
 
