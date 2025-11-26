@@ -117,7 +117,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 				request.status = "waiting";
 				request.mechanicId = null;
 				
-				//handling status of request and changing response of mechanic who accepted the request
+				//handling status of request and changing response of mechanic who reject the request
 				const mech = request.nearbyMechanics.find(
 					m => m.mechanicId.equals(mechanic._id)
 				);
