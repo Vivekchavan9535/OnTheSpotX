@@ -53,28 +53,24 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			if (request.status === "waiting") {
 				request.status = "accepted";
 				request.mechanicId = mechanic._id;
+
+				//handling status of request and changing response of mechanic who accepted the request
+				const mech = request.nearbyMechanics.find(
+					m => m.mechanicId.equals(mechanic._id)
+				);
+
+				if (mech) {
+					mech.response = "accepted";
+					console.log("Mechanic updated in nearbyMechanics:", mech.name, mech.response);
+				} else {
+					console.log("Mechanic not found in nearbyMechanics for request", request._id);
+				}
+				
 				await request.save();
 
 				await sendWhatsApp(from, "✅ You have been assigned the service request.");
 
-
-				//handling status of request and changing response of mechanic who accepted the request
-				if (request.status === "waiting") {
-					request.status = "accepted";
-					request.mechanicId = mechanic._id;
-
-					const mech = request.nearbyMechanics.find(
-						m => m.mechanicId.equals(mechanic._id)
-					);
-
-					if (mech) {
-						mech.response = "accepted";
-					}
-
-					await request.save();
-
-					console.log(mech.name + " "+ mechResponse);
-				}
+				console.log(mech.name + " " + mechResponse);
 
 
 				console.log(`${from} accepted the request`);
