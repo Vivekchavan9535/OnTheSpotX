@@ -86,7 +86,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 						`📞 Phone: *${mechanic.phone}*\n` +
 						`━━━━━━━━━━━━━━\n` +
 						`📍 *Track Your Mechanic:*\n` +
-						`🔗 https://onethespotx.vercel.app/finding-mechanics/${request._id}\n` +
+						`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n` +
 						`━━━━━━━━━━━━━━\n` +
 						`🕒 Estimated Arrival: *10-20 min*\n` +
 						`✅ Stay available for calls.\n\n` +
@@ -177,7 +177,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 						`❌ *Mechanic Declined*\n\n` +
 						`🔍 Searching for another mechanic…\n\n` +
 						`📍 *Track status here:*\n` +
-						`🔗 http://localhost:5173/finding-mechanics/${request._id}\n\n` +
+						`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
 						`🙏 Thank you for your patience!`
 					);
 				}
