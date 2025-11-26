@@ -44,10 +44,10 @@ export default function Service() {
 	// State to manage the Edit Modal visibility
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	// Fetch services on mount
-	useEffect(() => {
-		dispatch(fetchServices());
-	}, [dispatch]);
+	// // Fetch services on mount
+	// useEffect(() => {
+	// 	dispatch(fetchServices());
+	// }, [dispatch]);
 
 	// When editId changes in Redux, open/close the modal
 	useEffect(() => {
