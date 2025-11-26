@@ -64,14 +64,15 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 					request.mechanicId = mechanic._id;
 
 					const mech = request.nearbyMechanics.find(
-						mech => mech.mechanicId === mechanic._id
+						m => m.mechanicId === mechanic._id
 					);
 					if (mech) {
 						mech.response = "accepted";
 					}
+
 					await request.save();
 
-					console.log(mech.name +" "+ mechResponse);
+					console.log(mechResponse);
 				}
 
 
