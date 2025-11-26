@@ -90,7 +90,7 @@ function App() {
 					<Route path="/user/:id" element={<ShowUser />} />
 					<Route path="/mechanic-profile" element={<MechanicProfile />} />
 					<Route path="/service-request/:serviceId" element={<ServiceRequest />} />
-					<Route path="/finding-mechanics" element={<FindingMechanics/>} />
+					<Route path="/finding-mechanics/:id" element={<FindingMechanics/>} />
 
 				</Routes>
 			</SearchContext.Provider>
