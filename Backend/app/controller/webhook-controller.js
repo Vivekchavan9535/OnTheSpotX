@@ -116,6 +116,19 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
 				request.status = "waiting";
 				request.mechanicId = null;
+				
+				//handling status of request and changing response of mechanic who accepted the request
+				const mech = request.nearbyMechanics.find(
+					m => m.mechanicId.equals(mechanic._id)
+				);
+
+				if (mech) {
+					mech.response = "rejected";
+					console.log("Mechanic updated in nearbyMechanics:", mech.name, mech.response);
+				} else {
+					console.log("Mechanic not found in nearbyMechanics for request", request._id);
+				}
+
 				await request.save();
 
 				await sendWhatsApp(from, "❌ You have rejected this request. It’s now open again for others.");
