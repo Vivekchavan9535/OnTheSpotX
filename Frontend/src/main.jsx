@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import AuthProvider from './components/AuthProvider'
 import createStore from './store/store.js'
 import { Provider } from 'react-redux'
+import ScrollToTop from './components/ScrollToTop'
 
 const store = createStore()
 console.log('store updated', store.getState());
@@ -17,6 +18,7 @@ store.subscribe(()=>{
 
 createRoot(document.getElementById('root')).render(
 	<BrowserRouter>
+	<ScrollToTop/>
 		<Provider store={store}>
 			<AuthProvider>
 				<App />
