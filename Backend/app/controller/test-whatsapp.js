@@ -12,9 +12,9 @@ const sendWhatsApp = async (to) => {
       to,
       body: `🚗 *Service Request (Test)*\n\n🛵 Vehicle: Two-wheeler\n⚙️ Issue: Flat tire\n📍 Location: MG Road\n\nReply with:\n👉 1 to ACCEPT\n👉 2 to REJECT`,
     });
-    console.log("✅ Message sent!");
+    console.log("Message sent!");
   } catch (error) {
-    console.error("❌ Error:", error.response?.data || error.message);
+    console.error("Error:", error.response?.data || error.message);
   }
 };
 

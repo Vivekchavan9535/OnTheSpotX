@@ -25,7 +25,7 @@ export default function LoginUi() {
 	const demo = (role) => {
 		const creds = {
 			admin: { email: "admin@test.com", password: "admin123" },
-			mechanic: { email: "mech@test.com", password: "mech123" },
+			mechanic: { email: "jaswanth@test.com", password: "Jaswanth123" },
 			customer: { email: "user@test.com", password: "user123" },
 		}[role];
 
