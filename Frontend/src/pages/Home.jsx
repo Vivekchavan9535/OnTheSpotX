@@ -4,6 +4,8 @@ import logoImg from '../assets/logo.png'
 import IndiaText from '../components/IndiaText'
 import ReviewCards from "../components/ReviewCards";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 
 const ourServices = [
 	{
@@ -35,6 +37,13 @@ const ourServices = [
 	},
 ];
 
+
+const toastErr = (msg) =>
+	toast.error(msg, {
+		position: "top-center",
+		autoClose: 1000,
+		theme: "dark",
+	});
 
 
 const steps = [
@@ -72,6 +81,9 @@ export default function Home() {
 	const onBook = () => {
 		if (localStorage.getItem('token')) {
 			navigate('/services')
+		} else {
+			toastErr("Login to Book Service")
+			navigate('/login')
 		}
 	}
 
