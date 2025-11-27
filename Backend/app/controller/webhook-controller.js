@@ -3,13 +3,13 @@ import ServiceRequest from "../model/serviceRequest-model.js";
 import Mechanic from "../model/mechanic-model.js";
 import sendWhatsApp from "../controller/notification-controller.js";
 
-const webhookUrl = "https://webhook.site/2cfb5511-d974-458d-8164-7e87c3fcc054";
+const webhookUrl = process.env.WEBHOOK_URL;
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
 
 	// if (req.body?.instanceData?.idInstance === 7107365993 || req.body?.typeWebhook === "incomingMessageReceived" || req.body?.instanceData?.typeInstance === "whatsapp") {
-	// 	console.log("🛑 Ignored old Green-API webhook");
+	// 	console.log("Ignored old Green-API webhook");
 	// 	return res.status(200).send("ignored");
 	// }
 
@@ -120,7 +120,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 
 
-		// ✅ Handle REJECT (2)
+		// Handle REJECT (2)
 		if (messageText === "2") {
 			//handle reject and re notify
 			if (request.status === "accepted" && String(request.mechanicId) === String(mechanic._id)) {
@@ -208,7 +208,7 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 
 
 
-// ✅ Optional Reset API (for testing)
+// Optional Reset API (for testing)
 webhookCtrl.resetAllRequests = async (req, res) => {
 	try {
 		const result = await ServiceRequest.updateMany(
