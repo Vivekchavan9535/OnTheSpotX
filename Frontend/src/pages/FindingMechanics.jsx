@@ -6,6 +6,7 @@ import { Button } from "../components/ui/button";
 import { Loader2, Phone, ArrowLeft, MapPin, Wrench } from "lucide-react";
 import axios from "../config/axios";
 import { toast } from "react-toastify";
+import MyMap from "../components/MyMap"
 
 const toastErr = (msg) =>
 	toast.error(msg, {
@@ -139,7 +140,7 @@ export default function FindingMechanics() {
 	const isMechanicLoading = !mechanic || !mechanic.fullName;
 
 	return (
-		<div className="flex items-center justify-center bg-muted/40 py-5 px-4">
+		<div className="grid lg:flex items-center justify-center bg-muted/40 py-5 px-4">
 			<Card className="w-full max-w-md shadow-lg border border-border/60">
 				<CardHeader>
 					<CardTitle className="flex justify-between items-center text-base">
@@ -278,8 +279,23 @@ export default function FindingMechanics() {
 							{mechanic?.phone ? "Call Mechanic" : "Waiting..."}
 						</Button>
 					</div>
+
+
+
 				</CardContent>
+
+
+
 			</Card>
+			{mechanic?.location && (
+				<MyMap
+					mechLat={mechanic.location.latitude}
+					mechLong={mechanic.location.longitude}
+					customerLat={request.userLocation.latitude}
+					customerLong={request.userLocation.longitude}
+
+				/>
+			)}
 		</div>
 	);
 }

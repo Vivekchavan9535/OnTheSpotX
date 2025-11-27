@@ -27,6 +27,7 @@ import MechanicProfile from "./pages/MechanicProfile"
 import { fetchMechProfile } from './slices/mechanicSlice.js'
 import ServiceRequest from './pages/ServiceRequest'
 import FindingMechanics from './pages/FindingMechanics'
+import MyMap from './components/MyMap';
 
 
 
@@ -90,8 +91,8 @@ function App() {
 					<Route path="/user/:id" element={<ShowUser />} />
 					<Route path="/mechanic-profile" element={<MechanicProfile />} />
 					<Route path="/service-request/:serviceId" element={<ServiceRequest />} />
-					<Route path="/finding-mechanics/:id" element={<FindingMechanics/>} />
-
+					<Route path="/finding-mechanics/:id" element={<FindingMechanics />} />
+					<Route path="/mymap" element={<MyMap/>} />
 				</Routes>
 			</SearchContext.Provider>
 			<Footer logoImg={logoImg} />
