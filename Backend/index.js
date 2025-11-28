@@ -64,6 +64,12 @@ app.get('/service-request/:id',userAuthentication,userAuthorization(['customer']
 app.post('/whatsapp',webhookCtrl.handleWhatsapp)
 app.post("/reset", webhookCtrl.resetAllRequests);
 
+//for awaking my onrender server
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
+
 app.listen(port, () => {
 	console.log(`Server is running on ${port}`)
 })

@@ -50,6 +50,9 @@ function App() {
 
 
 	useEffect(() => {
+		//for Awaking onrender on initial render
+		 fetch("https://onthespotx.onrender.com/health").catch(() => {});
+
 		if (token && user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
