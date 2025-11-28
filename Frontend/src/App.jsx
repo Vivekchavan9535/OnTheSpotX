@@ -28,6 +28,8 @@ import { fetchMechProfile } from './slices/mechanicSlice.js'
 import ServiceRequest from './pages/ServiceRequest'
 import FindingMechanics from './pages/FindingMechanics'
 import MyMap from './components/MyMap';
+import {fectServiceRequests} from './slices/serviceRequestsSlice.js'
+import AllServiceRequests from './pages/AllServiceRequests'
 
 
 
@@ -51,6 +53,7 @@ function App() {
 		if (token && user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
+			dispatch(fectServiceRequests())
 		} else if (token && user?.role == "mechanic" && user?._id) {
 			dispatch(fetchMechProfile(user._id))
 		}
@@ -93,6 +96,7 @@ function App() {
 					<Route path="/service-request/:serviceId" element={<ServiceRequest />} />
 					<Route path="/finding-mechanics/:id" element={<FindingMechanics />} />
 					<Route path="/mymap" element={<MyMap/>} />
+					<Route path="/all-service-requests" element={<AllServiceRequests/>}/>
 				</Routes>
 			</SearchContext.Provider>
 			<Footer logoImg={logoImg} />

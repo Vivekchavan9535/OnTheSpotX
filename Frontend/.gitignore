@@ -25,5 +25,5 @@ dist-ssr
 
 
 # backend
-Backend\.env
+Backend/.env
 
