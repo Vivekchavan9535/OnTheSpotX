@@ -97,8 +97,8 @@ export default function MechanicProfile() {
 				</CardContent>
 
 				<CardFooter className="flex flex-wrap justify-center gap-3">
-					<Button variant="outline">Contact</Button>
-					<Button>Book Service</Button>
+					{/* <Button variant="outline">Contact</Button> */}
+					{/* <Button>Book Service</Button> */}
 					<Button variant="secondary" onClick={() => setEditOpen(true)}>
 						Edit Account
 					</Button>
