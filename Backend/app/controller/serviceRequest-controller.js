@@ -98,11 +98,23 @@ serviceReqCtrl.getMyRequest = async (req, res) => {
 
 		if (!request) return res.status(404).json("Not found");
 
-		res.status(200).json({ request});
+		res.status(200).json({ request });
 	} catch (err) {
 		res.status(500).json(err.message);
 	}
 };
+
+
+
+serviceReqCtrl.list = async (req, res)=> {
+	try {
+		const serviceRequests = await ServiceRequest.find()
+		if (!serviceRequests) return res.status(404).json("Not found");		
+		res.status(200).json(serviceRequests);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+}
 
 
 export default serviceReqCtrl;

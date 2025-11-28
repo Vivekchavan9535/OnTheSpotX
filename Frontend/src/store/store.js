@@ -3,6 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import usersSlice from '../slices/usersSlice';
 import mechanicsSlice from '../slices/mechanicSlice'
 import servicesSlice from '../slices/servicesSlice'
+import serviceRequestsSlice from '../slices/serviceRequestsSlice'
 
 
 const store=()=>{
@@ -10,7 +11,8 @@ const store=()=>{
 		reducer: {
 			users: usersSlice,
 			mechanics:mechanicsSlice,
-			services:servicesSlice
+			services:servicesSlice,
+			serviceRequests:serviceRequestsSlice
 		},
 	});
 }
