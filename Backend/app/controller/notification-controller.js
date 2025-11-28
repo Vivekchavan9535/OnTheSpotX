@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instanceId = process.env.INSTANCE_ID;
-const token = process.env.Token;
+const token = process.env.TOKEN;
 
 //send whatsapp messages
 const sendWhatsApp = async (to, message) => {
