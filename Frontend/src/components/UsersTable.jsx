@@ -232,8 +232,8 @@ export default function UsersTable() {
 							</TableBody>
 						</Table>
 
-						<div className="mt-4">
-							<PaginationUi />
+						<div className="mt-4 flex justify-center">
+							<PaginationUi/>
 						</div>
 					</>
 				)}

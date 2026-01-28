@@ -28,7 +28,7 @@ import { fetchMechProfile } from './slices/mechanicSlice.js'
 import ServiceRequest from './pages/ServiceRequest'
 import FindingMechanics from './pages/FindingMechanics'
 import MyMap from './components/MyMap';
-import {fectServiceRequests} from './slices/serviceRequestsSlice.js'
+import {fetchServiceRequests} from './slices/serviceRequestsSlice.js'
 import AllServiceRequests from './pages/AllServiceRequests'
 
 
@@ -50,13 +50,10 @@ function App() {
 
 
 	useEffect(() => {
-		//for Awaking onrender on initial render
-		 fetch("https://onthespotx.onrender.com/health").catch(() => {});
-
 		if (token && user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
-			dispatch(fectServiceRequests())
+			dispatch(fetchServiceRequests({ page: 1 }));
 		} else if (token && user?.role == "mechanic" && user?._id) {
 			dispatch(fetchMechProfile(user._id))
 		}
@@ -65,7 +62,6 @@ function App() {
 
 
 
-	// central debounced search effect
 	useEffect(() => {
 		const clean = String(search || "").trim();
 

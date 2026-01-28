@@ -106,11 +106,16 @@ serviceReqCtrl.getMyRequest = async (req, res) => {
 
 
 
-serviceReqCtrl.list = async (req, res)=> {
+serviceReqCtrl.list = async (req, res) => {
+	const page = req.query.page;
+	const limit = 10;
+
+	const total = await ServiceRequest.countDocuments();
+
 	try {
-		const serviceRequests = await ServiceRequest.find()
-		if (!serviceRequests) return res.status(404).json("Not found");		
-		res.status(200).json(serviceRequests);
+		const serviceRequests = await ServiceRequest.find().skip((page - 1) * limit).limit(limit);
+		if (!serviceRequests) return res.status(404).json("Not found");
+		res.status(200).json({ serviceRequests, totalPages: Math.ceil(total / limit) });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
