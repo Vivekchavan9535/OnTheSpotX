@@ -5,12 +5,13 @@ import ServiceBookingStats from '../components/ServiceBookingStats'
 
 export default function AllServiceRequests() {
 
-	const { data, loading } = useSelector((state) => state.serviceRequests)
+	const { data, loading, totalCount, totalPages} = useSelector((state) => state.serviceRequests)
+	const {data: statsData, loading: statsLoading} = useSelector((state) => state.serviceRequestsStats)
 
 	return (
 		<div className="p-5 py-0">
-			<ServiceBookingStats/>
-			<AllServiceRequestsTable data={data} loading={loading} />
+			<ServiceBookingStats data={statsData} loading={statsLoading} totalCount={totalCount} />
+			<AllServiceRequestsTable data={data} loading={loading} totalPages={totalPages} />
 		</div>
 	)
 }

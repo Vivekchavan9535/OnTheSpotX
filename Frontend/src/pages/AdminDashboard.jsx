@@ -1,10 +1,19 @@
 import UsersTable from '../components/UsersTable'
 import AdminDashboardStats from '../components/AdminDashboardStats';
+import { useSelector } from 'react-redux'
+
 
 export default function AdminDashboard() {
+	
+	const { data, loading, error } = useSelector((state) => state.serviceRequestsStats)
+	const {totalRequests} = data;
+	console.log("Total Requests:", data?.totalRequests);
+	
+
+
 	return (
 		<div>
-			<AdminDashboardStats />
+			<AdminDashboardStats totalRequests={totalRequests} />
 			<UsersTable/>
 		</div>
 	)

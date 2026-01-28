@@ -111,15 +111,36 @@ serviceReqCtrl.list = async (req, res) => {
 	const limit = 10;
 
 	const total = await ServiceRequest.countDocuments();
+	console.log(total);
+
 
 	try {
 		const serviceRequests = await ServiceRequest.find().skip((page - 1) * limit).limit(limit);
 		if (!serviceRequests) return res.status(404).json("Not found");
-		res.status(200).json({ serviceRequests, totalPages: Math.ceil(total / limit) });
+		res.status(200).json({ serviceRequests, totalPages: Math.ceil(total / limit)});
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}
-}
+};
+
+serviceReqCtrl.listStats = async (req, res) => {
+	try {
+		const totalRequests = await ServiceRequest.countDocuments();
+		const pendingRequests = await ServiceRequest.countDocuments({ status: "waiting" });
+		const acceptedRequests = await ServiceRequest.countDocuments({ status: "accepted" });
+		const completedRequests = await ServiceRequest.countDocuments({ status: "completed" });
+		const cancelledRequests = await ServiceRequest.countDocuments({ status: "cancelled" });
+		res.status(200).json({
+			totalRequests,
+			pendingRequests,
+			acceptedRequests,
+			completedRequests,
+			cancelledRequests
+		});
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
 
 
 export default serviceReqCtrl;

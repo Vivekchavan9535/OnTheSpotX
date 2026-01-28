@@ -18,12 +18,11 @@ import { fetchServiceRequests } from "../slices/serviceRequestsSlice.js";
 import { useDispatch, useSelector } from "react-redux";
 
 
-export default function AllServiceRequestsTable() {
+export default function AllServiceRequestsTable({data = [], loading = false,totalPages={totalPages}}) {
 
 	const [page, setPage] = useState(1)
 	const dispatch = useDispatch()
 
-	const { data = [], loading = false, totalPages} = useSelector((state) => state.serviceRequests);
 
 	useEffect(() => {
 		dispatch(fetchServiceRequests({ page }))
