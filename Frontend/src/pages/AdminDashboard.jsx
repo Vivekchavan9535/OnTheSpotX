@@ -7,9 +7,6 @@ export default function AdminDashboard() {
 	
 	const { data, loading, error } = useSelector((state) => state.serviceRequestsStats)
 	const {totalRequests} = data;
-	console.log("Total Requests:", data?.totalRequests);
-	
-
 
 	return (
 		<div>
