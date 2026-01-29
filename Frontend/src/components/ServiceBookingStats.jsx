@@ -1,30 +1,42 @@
-import React, { useMemo } from "react";
-
+import { useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux"
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import { CheckCircle, XCircle, Clock, Truck, Box } from "lucide-react";
+import { fetchServiceRequests } from "../slices/serviceRequestsSlice.js"
+import { useSearchParams } from "react-router-dom"
 
-import {
-	CheckCircle,
-	XCircle,
-	Clock,
-	Truck,
-	Box
-} from "lucide-react";
+
+
 
 export default function ServiceBookingStats({ data, loading = false }) {
+	const [searchParams, setSearchParams] = useSearchParams();
+
+
+	const dispatch = useDispatch()
+
+	const status = searchParams.get("status") || "total";
+	const page = searchParams.get("page") || 1;
+
 
 	const handleClick = (key) => {
-		console.log("Clicked:", key);
+		if(key==="pending"){
+			key = "waiting"
+		}
+		setSearchParams({ status: key, page: 1 });
 	};
+
+	useEffect(() => {
+		dispatch(fetchServiceRequests({ status, page }));
+	}, [status, page, dispatch]);
 
 	const cards = useMemo(() => {
 		if (!data) return [];
-		console.log("hii");
-		
+
 		return [
 			{
 				key: "total",

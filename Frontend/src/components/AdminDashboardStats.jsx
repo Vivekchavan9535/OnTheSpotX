@@ -105,7 +105,7 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 			</Card>
 
 			{/* All Service Requests Booked till now */}
-			<Card onClick={() => { navigate('/all-service-requests') }} className="min-w-0">
+			<Card onClick={() => { navigate('/all-service-requests?status=total&page=1') }} className="min-w-0">
 				<CardHeader className="flex items-center justify-between gap-2">
 					<CardTitle className="text-base flex items-center gap-2 truncate">
 						<FolderKanban size={20} /> All Service Requests Booked

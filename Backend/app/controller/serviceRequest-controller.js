@@ -109,15 +109,21 @@ serviceReqCtrl.getMyRequest = async (req, res) => {
 serviceReqCtrl.list = async (req, res) => {
 	const page = req.query.page;
 	const limit = 10;
+	
 
-	const total = await ServiceRequest.countDocuments();
-	console.log(total);
 
+	//filter by status
+	const filter = {};
+	if (req.query.status && req.query.status !== "total") {
+		filter.status = req.query.status;
+	}
+
+	const total = await ServiceRequest.countDocuments(filter);
 
 	try {
-		const serviceRequests = await ServiceRequest.find().skip((page - 1) * limit).limit(limit);
+		const serviceRequests = await ServiceRequest.find(filter).skip((page - 1) * limit).limit(limit);
 		if (!serviceRequests) return res.status(404).json("Not found");
-		res.status(200).json({ serviceRequests, totalPages: Math.ceil(total / limit)});
+		res.status(200).json({ serviceRequests, totalPages: Math.ceil(total / limit) });
 	} catch (err) {
 		res.status(500).json({ error: err.message });
 	}

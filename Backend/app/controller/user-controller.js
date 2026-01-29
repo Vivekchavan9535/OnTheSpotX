@@ -92,14 +92,14 @@ userCtrl.list = async (req, res) => {
 		const filter = {
 			$or: [
 				{ fullName: regex },
-				// { email: regex },
-				// { phone: regex },
+				{ email: regex },
+				{ phone: regex },
 				{ role: regex }
 			]
 		};
 
-		const users = await User.find(filter);
-		return res.json({users});
+		const users = await User.find({ ...filter, role: { $ne: "admin" } }).sort({ fullName: 1 });
+		return res.json(users);
 
 	} catch (err) {
 		return res.status(500).json({ error: err.message });

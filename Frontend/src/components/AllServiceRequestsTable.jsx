@@ -16,17 +16,25 @@ import { MoreHorizontal, Eye, Trash } from "lucide-react";
 import PaginationUi from './PaginationUi';
 import { fetchServiceRequests } from "../slices/serviceRequestsSlice.js";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 
 
-export default function AllServiceRequestsTable({data = [], loading = false,totalPages={totalPages}}) {
-
-	const [page, setPage] = useState(1)
+export default function AllServiceRequestsTable({ data = [], loading = false, totalPages}) {
 	const dispatch = useDispatch()
 
+	const [searchParams, setSearchParams] = useSearchParams();
+	const page = Number(searchParams.get("page")) || 1;
+
+	const status = searchParams.get("status") || "total";
+
+
+	const setPage = (newPage) => {
+		setSearchParams({ status, page: newPage });
+	};
 
 	useEffect(() => {
-		dispatch(fetchServiceRequests({ page }))
-	}, [page, dispatch])
+		dispatch(fetchServiceRequests({ status: searchParams.get("status") || "total", page }));
+	}, [page,status, dispatch]);
 
 	//format date
 	const formatDate = (iso) => {

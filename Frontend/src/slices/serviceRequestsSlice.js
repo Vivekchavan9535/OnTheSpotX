@@ -5,9 +5,12 @@ import axios from "../config/axios.js";
 export const fetchServiceRequests = createAsyncThunk(
 	"serviceRequests/fetchServiceRequests",
 
-	async ({ page }, { rejectWithValue }) => {
+
+	async ({ status, page}, { rejectWithValue }) => {
+
+		const url = `/service-requests?status=${status}&page=${page}`;
 		try {
-			const res = await axios.get(`/service-requests?page=${page}`, { headers: { Authorization: localStorage.getItem('token') } });
+			const res = await axios.get(url, { headers: { Authorization: localStorage.getItem('token') } });
 			console.log(res.data);
 			return res.data;
 		} catch (err) {

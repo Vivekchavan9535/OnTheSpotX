@@ -21,12 +21,8 @@ export default function UsersTable() {
 	const { data, loading, error } = useSelector((state) => state.users);
 
 
-	// minimal, safe sorting by fullName A->Z
-	const sortedUsers = [...data].sort((a, b) =>
-		(a?.fullName ?? "").localeCompare(b?.fullName ?? "")
-	);
 
-	// centralized search state from App
+	//search
 	const { search, setSearch } = useContext(SearchContext);
 
 	const handleDelete = (id) => dispatch(deleteUser(id));
@@ -95,7 +91,7 @@ export default function UsersTable() {
 						</div>
 					))
 				) : (
-					sortedUsers.filter((user)=>user.role!=="admin").map((user) => (
+					data?.map((user) => (
 						<div key={user._id} className="p-4 bg-white rounded-lg shadow border flex items-start gap-4">
 							<Avatar><AvatarFallback>{(user.fullName || "U").split(" ").map(n => n[0]).join("").toUpperCase()}</AvatarFallback></Avatar>
 							<div className="flex-1">
@@ -177,7 +173,7 @@ export default function UsersTable() {
 							</TableHeader>
 
 							<TableBody>
-								{sortedUsers.filter((user)=>user.role!=="admin").map((user) => (
+								{data?.map((user) => (
 									<TableRow key={user._id}>
 										<TableCell className="flex items-center gap-3">
 											<Avatar>

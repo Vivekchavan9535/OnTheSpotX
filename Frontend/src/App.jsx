@@ -49,12 +49,11 @@ function App() {
 
 	const token = localStorage.getItem("token")
 
-
 	useEffect(() => {
 		if (token && user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
-			dispatch(fetchServiceRequests({ page: 1 }));
+			dispatch(fetchServiceRequests());
 			dispatch(fetchServiceRequestsStats());
 		} else if (token && user?.role == "mechanic" && user?._id) {
 			dispatch(fetchMechProfile(user._id))
