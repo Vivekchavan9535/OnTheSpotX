@@ -67,7 +67,7 @@ function App() {
 		}
 
 		dispatch(fetchServices())
-	}, [dispatch, user, token]);
+	}, [dispatch, user?.role,user?._id, token]);
 
 
 
