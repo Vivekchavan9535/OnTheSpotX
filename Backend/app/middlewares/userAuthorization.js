@@ -1,6 +1,7 @@
 export const userAuthorization = (role)=>{
 	return (req,res,next)=>{
-		if(role.includes(req.role)){
+			console.log(req.role);
+		if(role.includes(req.role)){			
 			next()
 		}else{
 			res.json("Not Authorized")

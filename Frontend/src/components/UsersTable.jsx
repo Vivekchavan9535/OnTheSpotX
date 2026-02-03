@@ -34,7 +34,6 @@ export default function UsersTable() {
 	// skeleton counts
 	const SKELETON_COUNT = 6;
 
-	// role -> tailwind classes for badge (choose readable pairs)
 	function getRoleBadgeClass(role) {
 		switch ((role || "").toLowerCase()) {
 			case "admin":
@@ -55,7 +54,7 @@ export default function UsersTable() {
 			{/* top notices */}
 			<div className="p-5">
 				{error && <p className="mt-3 text-sm text-red-500">{String(error)}</p>}
-				{!loading && data.length === 0 && <p className="mt-3 text-sm text-muted-foreground">No users found</p>}
+				{!loading && data?.length === 0 && <p className="mt-3 text-sm text-muted-foreground">No users found</p>}
 			</div>
 
 			{/* Search input always rendered */}

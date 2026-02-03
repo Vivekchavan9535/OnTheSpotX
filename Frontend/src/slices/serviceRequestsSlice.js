@@ -11,7 +11,6 @@ export const fetchServiceRequests = createAsyncThunk(
 		const url = `/service-requests?status=${status}&page=${page}`;
 		try {
 			const res = await axios.get(url, { headers: { Authorization: localStorage.getItem('token') } });
-			console.log(res.data);
 			return res.data;
 		} catch (err) {
 			return rejectWithValue(err.response?.data);

@@ -22,26 +22,22 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 
 	const { search, setSearch } = useContext(SearchContext);
 
+	// Memoized stats calculation
 	const stats = useMemo(() => {
-		let mechanics = 0,
-			customers = 0,
-			pendingMechanics = 0;
-
-		(usersData || []).forEach((user) => {
-			if (user.role === "mechanic") {
-				mechanics++;
-				if (user.isVerified === false) pendingMechanics++;
-			}
-			if (user.role === "customer") customers++;
-		});
-
+		const totalUsers = usersData ? usersData.length : 0;
+		const mechanics = usersData ? usersData.filter(user => user.role === "mechanic").length : 0;
+		const customers = usersData ? usersData.filter(user => user.role === "customer").length : 0;
+		const pendingMechanics = usersData ? usersData.filter(user => user.role === "mechanic" && user.status === "pending").length : 0;
 		return {
-			total: usersData.length,
+			total: totalUsers,
 			mechanics,
 			customers,
-			pendingMechanics,
+			pendingMechanics
 		};
-	}, [usersData]);
+	}
+	, [usersData]);
+
+
 
 	// Skeleton loading
 	if (loading) {

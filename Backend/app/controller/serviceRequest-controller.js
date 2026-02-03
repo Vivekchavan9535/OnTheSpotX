@@ -110,8 +110,6 @@ serviceReqCtrl.list = async (req, res) => {
 	const page = req.query.page;
 	const limit = 10;
 	
-
-
 	//filter by status
 	const filter = {};
 	if (req.query.status && req.query.status !== "total") {

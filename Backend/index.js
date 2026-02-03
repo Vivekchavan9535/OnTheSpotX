@@ -57,6 +57,7 @@ app.delete('/service/:id', userAuthentication, userAuthorization(['admin']), ser
 app.post('/service-request', userAuthentication, userAuthorization(['customer']), serviceReqCtrl.create)
 app.get('/service-requests/', userAuthentication, userAuthorization(['admin']), serviceReqCtrl.list)
 app.get('/service-request/:id', userAuthentication, userAuthorization(['customer']), serviceReqCtrl.getMyRequest)
+
 app.get('/service-requests/listStats', userAuthentication, userAuthorization(['admin']), serviceReqCtrl.listStats)
 
 
