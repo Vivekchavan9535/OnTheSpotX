@@ -13,29 +13,16 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 	const navigate = useNavigate()
 
 
-	// Users slice
+	
 	const { data: usersData, loading: usersLoading = false } = useSelector((state) => state.users);
-
 	const {data: serviceRequestsData, loading: serviceRequestsLoading = false } = useSelector((state) => state.serviceRequests);
+	const {data: usersStatsData} = useSelector((state) => state.usersStats);
+
+	const { totalUsers = 0, totalCustomers = 0, totalMechanics = 0, pendingMechanics = 0 } = usersStatsData || {};
 
 	const loading = usersLoading || serviceRequestsLoading;
 
 	const { search, setSearch } = useContext(SearchContext);
-
-	// Memoized stats calculation
-	const stats = useMemo(() => {
-		const totalUsers = usersData ? usersData.length : 0;
-		const mechanics = usersData ? usersData.filter(user => user.role === "mechanic").length : 0;
-		const customers = usersData ? usersData.filter(user => user.role === "customer").length : 0;
-		const pendingMechanics = usersData ? usersData.filter(user => user.role === "mechanic" && user.status === "pending").length : 0;
-		return {
-			total: totalUsers,
-			mechanics,
-			customers,
-			pendingMechanics
-		};
-	}
-	, [usersData]);
 
 
 
@@ -62,7 +49,7 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 					<CardTitle className="text-base flex items-center gap-2 truncate">
 						<Users size={20} /> Total Users
 					</CardTitle>
-					<Badge>{stats.total}</Badge>
+					<Badge>{totalUsers}</Badge>
 				</CardHeader>
 				<CardContent className="text-muted-foreground text-sm">All registered users</CardContent>
 			</Card>
@@ -73,7 +60,7 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 					<CardTitle className="text-base flex items-center gap-2 truncate">
 						<Wrench size={20} /> Mechanics
 					</CardTitle>
-					<Badge className="bg-blue-100 text-blue-800">{stats.mechanics}</Badge>
+					<Badge className="bg-blue-100 text-blue-800">{totalMechanics}</Badge>
 				</CardHeader>
 				<CardContent className="text-muted-foreground text-sm">Total mechanics in system</CardContent>
 			</Card>
@@ -84,7 +71,7 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 					<CardTitle className="text-base flex items-center gap-2 truncate">
 						<UserCheck size={20} /> Customers
 					</CardTitle>
-					<Badge className="bg-green-100 text-green-800">{stats.customers}</Badge>
+					<Badge className="bg-green-100 text-green-800">{totalCustomers}</Badge>
 				</CardHeader>
 				<CardContent className="text-muted-foreground text-sm">Registered customers</CardContent>
 			</Card>
@@ -95,7 +82,7 @@ export default function AdminDashboardStats({totalRequests = 0 }) {
 					<CardTitle className="text-base flex items-center gap-2 truncate">
 						<Users size={20} /> Pending Mechanics
 					</CardTitle>
-					<Badge>{stats.pendingMechanics}</Badge>
+					<Badge>{pendingMechanics}</Badge>
 				</CardHeader>
 				<CardContent className="text-muted-foreground text-sm">Mechanics awaiting verification</CardContent>
 			</Card>

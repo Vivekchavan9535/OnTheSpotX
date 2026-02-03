@@ -36,6 +36,7 @@ app.get('/users', userAuthentication, userAuthorization(["admin"]), userCtrl.lis
 app.get('/user/account', userAuthentication, userCtrl.account);
 app.delete('/users/:id', userAuthentication, userAuthorization(["admin"]), userCtrl.remove)
 app.get('/user/:id', userAuthentication, userAuthorization(["admin"]), userCtrl.show)
+app.get('/users/stats', userAuthentication, userAuthorization(["admin"]), userCtrl.userStats)
 
 //mechanic
 app.post('/register/mechanic', userAuthentication, userAuthorization(["mechanic"]), mechCtrl.create)

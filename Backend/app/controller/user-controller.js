@@ -136,3 +136,21 @@ userCtrl.remove = async (req, res) => {
 		return res.status(500).json({ error: "Something went wrong" });
 	}
 };
+
+
+userCtrl.userStats = async (req, res) => {
+	try {
+		const totalUsers= await User.countDocuments();
+		const totalCustomers= await User.countDocuments({role:"customer"});
+		const totalMechanics= await User.countDocuments({role:"mechanic"});
+		const pendingMechanics= await Mechanic.countDocuments({status:"pending"});
+		return res.json({
+			totalUsers,
+			totalCustomers,
+			totalMechanics,
+			pendingMechanics
+		})
+	} catch (error) {
+		return res.status(500).json({error:"Something went wrong"})
+	}
+}

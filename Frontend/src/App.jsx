@@ -30,6 +30,7 @@ import FindingMechanics from './pages/FindingMechanics'
 import MyMap from './components/MyMap';
 import {fetchServiceRequests} from './slices/serviceRequestsSlice.js'
 import {fetchServiceRequestsStats} from './slices/serviceRequestsStats.js'
+import {fetchUsersStats} from './slices/usersStatsSlice.js'
 import AllServiceRequests from './pages/AllServiceRequests'
 
 
@@ -55,6 +56,7 @@ function App() {
 			dispatch(fetchMechanics());
 			dispatch(fetchServiceRequests());
 			dispatch(fetchServiceRequestsStats());
+			dispatch(fetchUsersStats());
 		} else if (token && user?.role == "mechanic" && user?._id) {
 			dispatch(fetchMechProfile(user._id))
 		}

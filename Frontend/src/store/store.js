@@ -5,6 +5,7 @@ import mechanicsSlice from '../slices/mechanicSlice'
 import servicesSlice from '../slices/servicesSlice'
 import serviceRequestsSlice from '../slices/serviceRequestsSlice'
 import serviceRequestsStatsSlice from '../slices/serviceRequestsStats.js'
+import usersStatsSlice from '../slices/usersStatsSlice.js'
 
 
 const store=()=>{
@@ -15,6 +16,7 @@ const store=()=>{
 			services:servicesSlice,
 			serviceRequests:serviceRequestsSlice,
 			serviceRequestsStats:serviceRequestsStatsSlice,
+			usersStats:usersStatsSlice,
 		},
 	});
 }
