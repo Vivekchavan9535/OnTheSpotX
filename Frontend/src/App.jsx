@@ -28,9 +28,9 @@ import { fetchMechProfile } from './slices/mechanicSlice.js'
 import ServiceRequest from './pages/ServiceRequest'
 import FindingMechanics from './pages/FindingMechanics'
 import MyMap from './components/MyMap';
-import {fetchServiceRequests} from './slices/serviceRequestsSlice.js'
-import {fetchServiceRequestsStats} from './slices/serviceRequestsStats.js'
-import {fetchUsersStats} from './slices/usersStatsSlice.js'
+import { fetchServiceRequests } from './slices/serviceRequestsSlice.js'
+import { fetchServiceRequestsStats } from './slices/serviceRequestsStats.js'
+import { fetchUsersStats } from './slices/usersStatsSlice.js'
 import AllServiceRequests from './pages/AllServiceRequests'
 
 
@@ -44,6 +44,7 @@ function App() {
 	const dispatch = useDispatch();
 	const { user, loading } = useContext(UserContext);
 	const [search, setSearch] = useState("");
+	
 	const { data } = useSelector((state) => {
 		return state.users
 	})
@@ -51,15 +52,20 @@ function App() {
 	const token = localStorage.getItem("token")
 
 	useEffect(() => {
-		if (token && user?.role === 'admin') {
+		if (!token) return;
+
+		if (user?.role === 'admin') {
 			dispatch(fetchUsers());
 			dispatch(fetchMechanics());
 			dispatch(fetchServiceRequests());
 			dispatch(fetchServiceRequestsStats());
 			dispatch(fetchUsersStats());
-		} else if (token && user?.role == "mechanic" && user?._id) {
+		}
+
+		if (user?.role == "mechanic" && user?._id) {
 			dispatch(fetchMechProfile(user._id))
 		}
+
 		dispatch(fetchServices())
 	}, [dispatch, user, token]);
 
@@ -97,8 +103,8 @@ function App() {
 					<Route path="/mechanic-profile" element={<MechanicProfile />} />
 					<Route path="/service-request/:serviceId" element={<ServiceRequest />} />
 					<Route path="/finding-mechanics/:id" element={<FindingMechanics />} />
-					<Route path="/mymap" element={<MyMap/>} />
-					<Route path="/all-service-requests" element={<AllServiceRequests/>}/>
+					<Route path="/mymap" element={<MyMap />} />
+					<Route path="/all-service-requests" element={<AllServiceRequests />} />
 				</Routes>
 			</SearchContext.Provider>
 			<Footer logoImg={logoImg} />
