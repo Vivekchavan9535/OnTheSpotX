@@ -92,6 +92,56 @@ The application follows a client-server architecture with:
 - **ESLint**: Code quality and consistency enforcement
 - **Git**: Version control for collaborative development
 
+## Dependencies
+
+### Backend Dependencies
+- **axios** (^1.13.0): HTTP client for external API calls (WhatsApp, etc.)
+- **bcrypt** (^6.0.0): Password hashing for secure authentication
+- **cors** (^2.8.5): Cross-Origin Resource Sharing middleware
+- **dotenv** (^17.2.3): Environment variable management
+- **express** (^5.1.0): Web application framework
+- **geolib** (^3.3.4): Geographic distance and coordinate calculations
+- **joi** (^18.0.1): Schema validation for API inputs
+- **jsonwebtoken** (^9.0.2): JWT token generation and verification
+- **mongodb** (^6.20.0): MongoDB driver
+- **mongoose** (^8.19.1): MongoDB object modeling
+- **nodemailer** (^7.0.9): Email sending functionality
+
+### Frontend Dependencies
+- **@emotion/react** (^11.14.0), **@emotion/styled** (^11.14.1): Styling for Material-UI
+- **@mui/material** (^7.3.7): Material Design components
+- **@radix-ui/react-* **: Accessible UI primitives (dialog, tabs, etc.)
+- **@reduxjs/toolkit** (^2.10.1): State management library
+- **@tailwindcss/***: Tailwind CSS integration
+- **axios** (^1.13.2): HTTP client for API requests
+- **class-variance-authority** (^0.7.1), **clsx** (^2.1.1): CSS class utilities
+- **formik** (^2.4.9): Form state management
+- **framer-motion** (^12.23.24): Animation library
+- **joi** (^18.0.1): Client-side validation
+- **lucide-react** (^0.553.0): Icon library
+- **pigeon-maps** (^0.22.1): Lightweight map component for location display
+- **react** (^19.2.0), **react-dom** (^19.2.0): React library
+- **react-icons** (^5.5.0): Additional icon set
+- **react-loading-skeleton** (^3.5.0): Loading placeholder components
+- **react-redux** (^9.2.0): React bindings for Redux
+- **react-router-dom** (^7.9.5): Client-side routing
+- **react-toastify** (^11.0.5): Toast notifications
+- **tailwind-merge** (^3.4.0), **tailwindcss-animate** (^1.0.7): Tailwind utilities
+
+### Geolocation & Mapping
+
+#### Geolocation
+- **Browser Geolocation API**: Utilizes `navigator.geolocation` for obtaining user's current location (planned for service booking)
+- **Geolib Library**: Calculates distances between coordinates for mechanic matching within 5km radius
+
+#### Reverse Geocoding
+- **Not Currently Implemented**: Future enhancement to convert coordinates to human-readable addresses
+- **Potential Integration**: Google Maps API or OpenStreetMap Nominatim for address lookup
+
+#### Mapping
+- **Pigeon Maps**: Lightweight, dependency-free map component for displaying mechanic and customer locations
+- **Custom Markers**: Mechanic and customer location pins with custom icons
+
 ## Installation & Setup
 
 ### Prerequisites
