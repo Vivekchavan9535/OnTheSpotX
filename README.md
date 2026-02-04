@@ -440,8 +440,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact & Support
 
 - **GitHub Issues**: Report bugs and request features
-- **Email**: [your-email@example.com]
-- **LinkedIn**: [Your LinkedIn Profile]
+- **Email**: vivekchavan942@gmail.com
+- **LinkedIn**: vivek-chavan26
 
 ---
 
