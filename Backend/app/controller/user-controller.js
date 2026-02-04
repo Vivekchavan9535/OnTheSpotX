@@ -98,7 +98,7 @@ userCtrl.list = async (req, res) => {
 			]
 		};
 
-		const users = await User.find({ ...filter, role: { $ne: "admin" } }).sort({ fullName: 1 });
+		const users = await User.find({ ...filter, role: { $ne: "admin" } }).select("-password").sort({ fullName: 1 });
 		return res.json(users);
 
 	} catch (err) {
