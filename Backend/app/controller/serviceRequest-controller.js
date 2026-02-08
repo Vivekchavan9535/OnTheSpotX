@@ -80,40 +80,39 @@ serviceReqCtrl.create = async (req, res) => {
 			}
 		}
 
+		//2 minutes timeout
+		setTimeout(async () => {
+			try {
+				const request = await ServiceRequest.findById(newReq._id);
+				if (!request) return;
+				if (request.status === "waiting") {
+					request.status = "cancelled";
+					await request.save();
+					console.log(`Service request ${request._id} cancelled due to timeout.`);
+
+					// Notify customer about cancellation
+					if (request.customerNumber) {
+						await sendWhatsApp(
+							request.customerNumber,
+							`⏰ *Request Timed Out*\n\n` +
+							`😔 We're sorry, but we couldn't find an available mechanic within 5 minutes.\n\n` +
+							`📍 *Track status here:*\n` +
+							`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
+							`🙏 Thank you for your understanding!`
+						);
+					}
+				}
+			} catch (err) {
+				console.log("Error in timeout handler:", err.message);
+			}
+		}, 20 * 1000);
+
 		res.status(201).json({ message: "Requests sent to all nearby mechanics", requestId: newReq._id });
 	} catch (error) {
 		console.log("Error in create:", error.message);
 		console.error("Full error:", error);
 		res.status(500).json({ error: error.message });
 	}
-
-
-	//2 minutes timeout
-	setTimeout(async () => {
-		try {
-			const request = await ServiceRequest.findById(newReq._id);
-			if (!request) return;
-			if (request.status === "waiting") {
-				request.status = "cancelled";
-				await request.save();
-				console.log(`Service request ${request._id} cancelled due to timeout.`);
-
-				// Notify customer about cancellation
-				if (request.customerNumber) {
-					await sendWhatsApp(
-						request.customerNumber,
-						`⏰ *Request Timed Out*\n\n` +
-						`😔 We're sorry, but we couldn't find an available mechanic within 5 minutes.\n\n` +
-						`📍 *Track status here:*\n` +
-						`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
-						`🙏 Thank you for your understanding!`
-					);
-				}
-			}
-		} catch (err) {
-			console.log("Error in timeout handler:", err.message);
-		}
-	}, 20 * 1000); 
 
 };
 
