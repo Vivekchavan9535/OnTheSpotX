@@ -171,7 +171,7 @@ const handleRequestTimeout = async (requestId) => {
 					await sendWhatsApp(
 						request.customerNumber,
 						`⏰ *Request Timed Out*\n\n` +
-						`😔 We're sorry, but we couldn't find an available mechanic within 5 minutes.\n\n` +
+						`😔 We're sorry, but we couldn't find an available mechanic within 2 minutes.\n\n` +
 						`📍 *Track status here:*\n` +
 						`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
 						`🙏 Thank you for your understanding!`
