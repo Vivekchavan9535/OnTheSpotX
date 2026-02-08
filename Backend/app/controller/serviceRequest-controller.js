@@ -113,7 +113,7 @@ serviceReqCtrl.create = async (req, res) => {
 		} catch (err) {
 			console.log("Error in timeout handler:", err.message);
 		}
-	}, 2 * 60 * 1000); 
+	}, 20 * 1000); 
 
 };
 
