@@ -15,7 +15,7 @@ serviceReqCtrl.create = async (req, res) => {
 		console.log("Body:", JSON.stringify(body, null, 2));
 
 		// Find all mechanics
-		const mechanics = await Mechanic.find();
+		const mechanics = await Mechanic.find(); 
 		console.log(`Found ${mechanics.length} mechanics in system`);
 
 		// Filter and calculate distance (within 5km)

@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
 	},
 	email: {
 		type: String,
-		required: true
+		required: true,
+		unique: true
 	},
 	phone: {
 		type: String,
@@ -17,18 +18,16 @@ const userSchema = new mongoose.Schema({
 	},
 	password: {
 		type: String,
-		required: true
+		required: true,
+		select:false
 	},
 	role: {
 		type: String,
 		enum: ['admin', 'customer', 'mechanic'],
 		default: "customer",
-		required: true
+		required: true,
+		index: true
 	},
-	// vehicleType: {
-	// 	type: String,
-	// }
-
 }, { timestamps: true })
 
 

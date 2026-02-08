@@ -7,26 +7,11 @@ const webhookUrl = process.env.WEBHOOK_URL;
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
-
-	// if (req.body?.instanceData?.idInstance === 7107365993 || req.body?.typeWebhook === "incomingMessageReceived" || req.body?.instanceData?.typeInstance === "whatsapp") {
-	// 	console.log("Ignored old Green-API webhook");
-	// 	return res.status(200).send("ignored");
-	// }
-
-
 	try {
 		await axios.post(webhookUrl, { received: req.body });
 
 		const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
 		const from = ("+" + (req.body?.data?.from || "").replace("@c.us", "").trim()).replace("++", "+");
-
-
-		// const messageText = (req.body?.data?.body || "").trim().slice(0, 1);
-
-		// // send full +91 number without slicing
-		// const from = (req.body?.data?.from || "")
-		// 	.replace("@c.us", "")
-		// 	.trim();
 
 
 		console.log(`Message : ${messageText}, \nFrom : ${from}`);
@@ -117,7 +102,6 @@ webhookCtrl.handleWhatsapp = async (req, res) => {
 			await sendWhatsApp(from, "⚠️ This request was already accepted by another mechanic.");
 			return res.status(200).json("Already accepted by someone else");
 		}
-
 
 
 		// Handle REJECT (2)

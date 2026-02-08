@@ -37,6 +37,7 @@ const serviceRequestSchema = new mongoose.Schema({
 		type: String,
 		enum: ["waiting", "accepted", "rejected", "cancelled", "completed", "no-mechanic-found"],
 		default: "waiting",
+		index: true
 	},
 	nearbyMechanics: [
 		{

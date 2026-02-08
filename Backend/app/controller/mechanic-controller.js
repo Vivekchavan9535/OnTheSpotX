@@ -57,13 +57,7 @@ mechCtrl.show = async (req, res) => {
 mechCtrl.mechProfile = async (req, res) => {
 	const id = req.params.id;
 	try {
-		const user = await User.findById(id);
-
-		if (!user) {
-			return res.status(404).json({ error: "User not found" });
-		}
-
-		const mechanic = await Mechanic.findOne({ userId: user._id });
+		const mechanic = await Mechanic.findOne({ userId: id });
 
 		if (!mechanic) {
 			return res.status(404).json({ error: "Mechanic not found" });

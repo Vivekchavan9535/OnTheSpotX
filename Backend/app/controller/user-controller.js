@@ -62,16 +62,16 @@ userCtrl.login = async (req, res) => {
 		const { error, value } = userLoginValidationSchema.validate(req.body);
 		if (error) return res.status(401).json({ error: "Invalid email/password" });
 
-		const user = await User.findOne({ email: value.email });
+		const user = await User.findOne({ email: value.email }).select("+password");
 		if (!user) return res.status(404).json({ error: "User not found" });
 
 		const ok = await bcrypt.compare(value.password, user.password);
 		if (!ok) return res.status(401).json({ error: "Invalid email/password" });
 
-		const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRET_KEY);
+		const token = jwt.sign({ userId: user._id, role: user.role }, process.env.SECRET_KEY,{ expiresIn: "1d" });
 		return res.json({ token });
-	} catch {
-		return res.status(500).json({ error: "Something went wrong" });
+	} catch (err) {
+		return res.status(500).json({ error: err.message });
 	}
 };
 
@@ -98,7 +98,7 @@ userCtrl.list = async (req, res) => {
 			]
 		};
 
-		const users = await User.find({ ...filter, role: { $ne: "admin" } }).select("-password").sort({ fullName: 1 });
+		const users = await User.find({ ...filter, role: { $ne: "admin" } }).sort({ fullName: 1 });
 		return res.json(users);
 
 	} catch (err) {
