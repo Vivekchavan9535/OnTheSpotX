@@ -7,7 +7,6 @@ const webhookUrl = process.env.WEBHOOK_URL;
 const webhookCtrl = {};
 
 webhookCtrl.handleWhatsapp = async (req, res) => {
-	res.sendStatus(200);
 	try {
 		// await axios.post(webhookUrl, { received: req.body });
 
