@@ -80,32 +80,9 @@ serviceReqCtrl.create = async (req, res) => {
 			}
 		}
 
-		//2 minutes timeout
-		setTimeout(async () => {
-			try {
-				const request = await ServiceRequest.findById(newReq._id);
-				if (!request) return;
-				if (request.status === "waiting") {
-					request.status = "cancelled";
-					await request.save();
-					console.log(`Service request ${request._id} cancelled due to timeout.`);
+		//2 timeout funtion
+		handleRequestTimeout(newReq._id);
 
-					// Notify customer about cancellation
-					if (request.customerNumber) {
-						await sendWhatsApp(
-							request.customerNumber,
-							`⏰ *Request Timed Out*\n\n` +
-							`😔 We're sorry, but we couldn't find an available mechanic within 5 minutes.\n\n` +
-							`📍 *Track status here:*\n` +
-							`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
-							`🙏 Thank you for your understanding!`
-						);
-					}
-				}
-			} catch (err) {
-				console.log("Error in timeout handler:", err.message);
-			}
-		}, 2 * 20 * 1000);
 
 		res.status(201).json({ message: "Requests sent to all nearby mechanics", requestId: newReq._id });
 	} catch (error) {
@@ -174,6 +151,54 @@ serviceReqCtrl.listStats = async (req, res) => {
 		res.status(500).json({ error: err.message });
 	}
 };
+
+
+
+//service timeout handler function
+const handleRequestTimeout = async (requestId) => {
+	//2 minutes timeout
+	setTimeout(async () => {
+		try {
+			const request = await ServiceRequest.findById(requestId);
+			if (!request) return;
+			if (request.status === "waiting") {
+				request.status = "cancelled";
+				await request.save();
+				console.log(`Service request ${request._id} cancelled due to timeout.`);
+
+				// Notify customer about cancellation
+				if (request.customerNumber) {
+					await sendWhatsApp(
+						request.customerNumber,
+						`⏰ *Request Timed Out*\n\n` +
+						`😔 We're sorry, but we couldn't find an available mechanic within 5 minutes.\n\n` +
+						`📍 *Track status here:*\n` +
+						`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
+						`🙏 Thank you for your understanding!`
+					);
+				}
+
+				if (request.nearbyMechanics && request.nearbyMechanics.length > 0) {
+					// Notify nearby mechanics about cancellation
+					for (const mech of request.nearbyMechanics) {
+						if (mech.phone) {
+							await sendWhatsApp(
+								mech.phone,
+								`⏰ *Request Timed Out*\n\n` +
+								`😔 The service request from ${request.userLocation?.address || "a customer"} has timed out and is no longer available.\n\n` +
+								`🙏 Thank you for your understanding!`
+							);
+						}
+					}
+				}
+				console.log(`Notified customer and nearby mechanics about cancellation of request ${request._id}.`);
+			}
+		} catch (err) {
+			console.log("Error in timeout handler:", err.message);
+		}
+	}, 2 * 20 * 1000);
+};
+
 
 
 export default serviceReqCtrl;
