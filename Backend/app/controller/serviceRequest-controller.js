@@ -105,7 +105,7 @@ serviceReqCtrl.create = async (req, res) => {
 			} catch (err) {
 				console.log("Error in timeout handler:", err.message);
 			}
-		}, 20 * 1000);
+		}, 2 * 20 * 1000);
 
 		res.status(201).json({ message: "Requests sent to all nearby mechanics", requestId: newReq._id });
 	} catch (error) {
