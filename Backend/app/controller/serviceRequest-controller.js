@@ -9,13 +9,12 @@ const serviceReqCtrl = {};
 serviceReqCtrl.create = async (req, res) => {
 	const body = req.body;
 
-
 	try {
 		console.log("Service Request received from:", req.user?.email);
 		console.log("Body:", JSON.stringify(body, null, 2));
 
 		// Find all mechanics
-		const mechanics = await Mechanic.find(); 
+		const mechanics = await Mechanic.find();
 		console.log(`Found ${mechanics.length} mechanics in system`);
 
 		// Filter and calculate distance (within 5km)
@@ -88,7 +87,38 @@ serviceReqCtrl.create = async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 
+
+	//2 minutes timeout
+	setTimeout(async () => {
+		try {
+			const request = await ServiceRequest.findById(newReq._id);
+			if (!request) return;
+			if (request.status === "waiting") {
+				request.status = "cancelled";
+				await request.save();
+				console.log(`Service request ${request._id} cancelled due to timeout.`);
+
+				// Notify customer about cancellation
+				if (request.customerNumber) {
+					await sendWhatsApp(
+						request.customerNumber,
+						`⏰ *Request Timed Out*\n\n` +
+						`😔 We're sorry, but we couldn't find an available mechanic within 5 minutes.\n\n` +
+						`📍 *Track status here:*\n` +
+						`🔗 https://onthespotx.vercel.app/finding-mechanics/${request._id}\n\n` +
+						`🙏 Thank you for your understanding!`
+					);
+				}
+			}
+		} catch (err) {
+			console.log("Error in timeout handler:", err.message);
+		}
+	}, 2 * 60 * 1000); 
+
 };
+
+
+
 
 
 serviceReqCtrl.getMyRequest = async (req, res) => {
@@ -109,7 +139,7 @@ serviceReqCtrl.getMyRequest = async (req, res) => {
 serviceReqCtrl.list = async (req, res) => {
 	const page = req.query.page;
 	const limit = 10;
-	
+
 	//filter by status
 	const filter = {};
 	if (req.query.status && req.query.status !== "total") {
