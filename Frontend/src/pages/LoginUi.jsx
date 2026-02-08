@@ -26,7 +26,7 @@ export default function LoginUi() {
 		const creds = {
 			admin: { email: "admin@test.com", password: "admin123" },
 			mechanic: { email: "jaswanth@test.com", password: "Jaswanth123" },
-			customer: { email: "user@test.com", password: "user123" },
+			customer: { email: "user@test.com", password: "User123" },
 		}[role];
 
 		if (!creds) return;
